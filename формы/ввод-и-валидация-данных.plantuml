@@ -1,0 +1,28 @@
+@startuml
+title Ввод и валидация данных формы
+
+skinparam shadowing false
+skinparam state {
+  BackgroundColor #E8F1FB
+  BorderColor #4169A1
+  ArrowColor #4169A1
+}
+
+[*] --> Editing
+state "Редактирование" as Editing #E8F1FB
+state "Проверка" as Validating #FFF4CC
+state "Ошибка валидации" as ValidationError #FDE2E2
+state "Отправка" as Submitting #FFF4CC
+state "Результат" as Result #E2F0D9
+state "Отключено" as Disabled #E8E8E8
+
+Editing --> Validating : отправка
+Validating --> ValidationError : ошибка
+ValidationError --> Editing : исправление
+Validating --> Submitting : проверка успешна
+Submitting --> Result : завершение
+Submitting --> Editing : ошибка операции
+Editing --> Disabled : недоступность
+Disabled --> Editing : доступ восстановлен
+Result --> [*]
+@enduml

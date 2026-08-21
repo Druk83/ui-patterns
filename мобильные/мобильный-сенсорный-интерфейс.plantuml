@@ -1,0 +1,35 @@
+@startuml
+title Мобильный сенсорный интерфейс
+
+skinparam shadowing false
+skinparam state {
+  BackgroundColor #E8F1FB
+  BorderColor #4169A1
+  ArrowColor #4169A1
+}
+
+[*] --> Initial
+state "Начальное состояние" as Initial #E8F1FB
+state "Загрузка" as Loading #FFF4CC
+state "Содержимое доступно" as Content #E8F1FB
+state "Обратная связь жеста" as GestureFeedback #FFF4CC
+state "Пустое состояние" as Empty #FDE2E2
+state "Ошибка операции" as Error #FDE2E2
+state "Нет соединения" as Offline #FDE2E2
+state "Клавиатура открыта" as KeyboardVisible #FFF4CC
+state "Компоновка восстановлена" as RestoredLayout #E2F0D9
+
+Initial --> Loading : открыть экран
+Loading --> Content : данные доступны
+Loading --> Error : ошибка загрузки
+Content --> GestureFeedback : tap, swipe, drag или hold
+GestureFeedback --> Content : действие обработано
+Content --> Empty : данных нет
+Content --> Offline : соединение потеряно
+Offline --> Loading : повторить или синхронизировать
+Error --> Loading : retry
+Content --> KeyboardVisible : открыть ввод
+KeyboardVisible --> RestoredLayout : клавиатура скрыта
+RestoredLayout --> Content : продолжить работу
+Content --> [*] : navigate back
+@enduml

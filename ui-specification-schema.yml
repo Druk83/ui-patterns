@@ -1,0 +1,105 @@
+schema_version: 1
+
+kind: ui-specification-package
+ownership: project-repository
+purpose: Машиночитаемый контракт конкретного UI-пакета, а не универсальный каталог паттернов
+
+package:
+  required:
+    - spec_id
+    - version
+    - status
+    - source_refs
+    - screen_manifest
+    - pattern_refs
+    - acceptance_refs
+  status_values:
+    - draft
+    - review
+    - approved
+    - superseded
+
+screen_manifest:
+  required:
+    - screen_id
+    - title
+    - route
+    - purpose
+    - roles
+    - viewport
+    - orientation
+    - responsive_profile
+    - states
+    - blocks
+    - reference_artifacts
+    - status
+    - acceptance_refs
+
+block:
+  required:
+    - ui_id
+    - purpose
+    - data
+    - controls
+    - actions
+    - states
+    - transitions
+    - validation
+    - accessibility
+    - responsive
+    - traceability
+
+action:
+  required:
+    - action_id
+    - label
+    - trigger
+    - availability
+    - input
+    - success
+    - error
+    - transitions
+    - acceptance_refs
+
+state:
+  required:
+    - state_id
+    - entry_conditions
+    - visible_changes
+    - available_actions
+    - exit_transitions
+
+transition:
+  required:
+    - source
+    - event
+    - condition
+    - target
+    - data_preservation
+
+reference_artifact:
+  required:
+    - artifact_id
+    - type
+    - path_or_url
+    - status
+    - viewport
+    - orientation
+    - role
+    - state
+    - version
+
+traceability:
+  required:
+    - requirement_refs
+    - scenario_refs
+    - pattern_refs
+    - acceptance_refs
+
+gap:
+  required:
+    - gap_id
+    - missing_decision
+    - owner
+    - blocking_condition
+    - closure_evidence

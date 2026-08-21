@@ -1,0 +1,28 @@
+@startuml
+title Табличное отображение структурированных данных
+
+skinparam shadowing false
+skinparam state {
+  BackgroundColor #E8F1FB
+  BorderColor #4169A1
+  ArrowColor #4169A1
+}
+
+[*] --> Collection
+state "Коллекция" as Collection #E8F1FB
+state "Отфильтрованный вид" as Filtered #FFF4CC
+state "Отсортированный вид" as Sorted #FFF4CC
+state "Страница" as Page #E8F1FB
+state "Действие строки" as RowAction #E2F0D9
+state "Ошибка или пустой результат" as GapState #FDE2E2
+
+Collection --> Filtered : фильтр или поиск
+Collection --> Sorted : сортировка
+Collection --> Page : пагинация
+Page --> Page : следующая или предыдущая страница
+Collection --> RowAction : действие строки
+Filtered --> RowAction : действие строки
+Sorted --> RowAction : действие строки
+Collection --> GapState : нет данных или ошибка
+GapState --> Collection : данные доступны
+@enduml

@@ -1,0 +1,30 @@
+@startuml
+title Мониторинговая панель
+
+skinparam shadowing false
+skinparam state {
+  BackgroundColor #E8F1FB
+  BorderColor #4169A1
+  ArrowColor #4169A1
+}
+
+[*] --> Dashboard
+state "Обзор панели" as Dashboard #E8F1FB
+state "Отфильтрованный вид" as Filtered #FFF4CC
+state "Отсортированный вид" as Sorted #FFF4CC
+state "Сводный уровень" as RolledUp #FFF4CC
+state "Детализированный вид" as DrilledDown #FFF4CC
+state "Связанные графики обновлены" as LinkedUpdate #E2F0D9
+state "Нет данных или ошибка" as GapState #FDE2E2
+
+Dashboard --> Filtered : фильтр или поиск
+Dashboard --> Sorted : сортировка
+Dashboard --> RolledUp : roll-up
+Dashboard --> DrilledDown : drill-down
+Filtered --> LinkedUpdate : обновить связанные графики
+Sorted --> LinkedUpdate : обновить связанные графики
+RolledUp --> DrilledDown : открыть детали
+LinkedUpdate --> Dashboard : продолжить исследование
+Dashboard --> GapState : состояние данных требует решения
+GapState --> Dashboard : данные доступны или выполнен retry
+@enduml

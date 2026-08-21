@@ -1,0 +1,25 @@
+@startuml
+title Иерархическая навигация меню
+
+skinparam shadowing false
+skinparam state {
+  BackgroundColor #E8F1FB
+  BorderColor #4169A1
+  ArrowColor #4169A1
+}
+
+[*] --> Expanded
+state "Развёрнутое меню" as Expanded #E8F1FB
+state "Открытое подменю" as OpenSubmenu #FFF4CC
+state "Выбранный пункт" as Selected #E2F0D9
+state "Свёрнутое меню" as Collapsed #E8F1FB
+state "Отключённый пункт" as Disabled #FDE2E2
+
+Expanded --> OpenSubmenu : открыть вложенный пункт
+OpenSubmenu --> Selected : выбрать пункт
+Selected --> Expanded : перейти к маршруту
+Expanded --> Collapsed : свернуть
+Collapsed --> Expanded : развернуть
+Expanded --> Disabled : пункт недоступен
+Disabled --> Expanded : доступ восстановлен
+@enduml

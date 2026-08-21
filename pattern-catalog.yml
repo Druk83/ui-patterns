@@ -1,0 +1,219 @@
+schema_version: 1
+catalog_id: ui-patterns
+catalog_version: 0.1.0
+domain: ui
+visibility: public
+
+purpose: >-
+  Сжатый машинно-читаемый каталог для выбора UI-паттерна и формирования
+  конкретной UI-спецификации. Каталог не содержит факты отдельного продукта.
+
+start_here:
+  procedure: ui-pattern-selection.md
+  output_schema: ui-specification-schema.yml
+  screen_template: ui-screen-specification-template.md
+  application_templates: ui-pattern-application-templates.yml
+
+selection_order:
+  - ui_scope
+  - screen_context
+  - user_task
+  - data_shape
+  - interaction_model
+  - state_model
+  - viewport_constraints
+  - accessibility_constraints
+  - pattern_conditions
+  - pattern_contraindications
+  - compatibility
+
+required_context:
+  - screen_id
+  - screen_purpose
+  - user_roles
+  - route_or_entry_point
+  - data_source_and_shape
+  - user_actions
+  - states_and_transitions
+  - viewport_and_orientation
+  - accessibility_constraints
+  - requirement_and_scenario_refs
+
+context_status_values: [confirmed, requirement, assumption, gap]
+
+family_paths:
+  forms: формы
+  lists: списки
+  dashboards: панели-мониторинга
+  mobile: мобильные
+  navigation: навигация
+  dialogs: диалоги
+
+decision_result:
+  required:
+    - selected_pattern
+    - catalog_version
+    - input_facts
+    - rejected_candidates
+    - applied_template
+    - generated_ui_blocks
+    - unresolved_gaps
+  rejection_record:
+    required: [candidate, decision, reason, related_context]
+
+quality_policy:
+  include_only:
+    - verified-general-rules
+    - normalized-selection-criteria
+    - required-output-fields
+    - explicit-known-limitations
+  exclude:
+    - project-specific-facts
+    - unverified-recommendations
+    - illustrative-domain-entities
+    - private-source-locations
+    - unsupported-accessibility-or-responsive-claims
+  evidence_statuses: [confirmed, partial, gap]
+  unknown_behavior: record-as-gap
+  no_exact_match_behavior: stop-selection-and-record-gap
+
+entries:
+  - id: ui-patterns.forms.form-data-entry-validation
+    title: Ввод и валидация данных формы
+    family: forms
+    pattern_type: FORM_WORKFLOW_UI
+    decision_scope: screen-block
+    status: active
+    card_path: формы/ввод-и-валидация-данных.md
+    template_id: form-workflow-ui
+    intent: Собрать, проверить и отправить введённые пользователем данные.
+    required_conditions:
+      - пользователь вводит или изменяет структурированные данные
+      - существует проверка или отправка данных
+    selection_signals:
+      - несколько полей ввода
+      - обязательные и необязательные поля
+      - field-level validation
+      - explicit submit
+    contraindications:
+      - отсутствует ввод данных
+      - требуется только подтверждение уже сформированного действия
+      - содержание требует длительного чтения или сложной навигации
+    compatible_with: [ui-patterns.dialogs.modal-dialog]
+    limitations:
+      - project-specific accessibility and breakpoint rules are required
+
+  - id: ui-patterns.lists.data-table
+    title: Табличное отображение структурированных данных
+    family: lists
+    pattern_type: LIST_DETAIL_UI
+    decision_scope: screen-block
+    status: active
+    card_path: списки/табличное-отображение-данных.md
+    template_id: list-detail-ui-data-table
+    intent: Показать коллекцию однотипных данных с операциями поиска, фильтрации, сортировки или постраничного просмотра.
+    required_conditions:
+      - данные имеют повторяющуюся строковую структуру
+      - пользователю требуется просматривать элементы коллекции
+    selection_signals:
+      - однородные строки и колонки
+      - поиск или фильтрация
+      - сортировка
+      - pagination
+      - действия над строкой
+    contraindications:
+      - данные требуют свободного визуального сравнения без строковой структуры
+      - узкий viewport не допускает таблицу без подтверждённого overflow-решения
+    compatible_with: [ui-patterns.navigation.menu-navigation, ui-patterns.dialogs.modal-dialog]
+    limitations:
+      - narrow-viewport and accessibility behavior require project decisions
+
+  - id: ui-patterns.navigation.menu-navigation
+    title: Иерархическая навигация меню
+    family: navigation
+    pattern_type: NAVIGATION_CONTENT_UI
+    decision_scope: screen-region
+    status: active
+    card_path: навигация/навигация-меню.md
+    template_id: navigation-content-ui-menu
+    intent: Дать пользователю переходы между несколькими разделами или маршрутами с сохранением выбранного пункта.
+    required_conditions:
+      - существует несколько разделов или маршрутов
+      - пользователю требуется переходить между ними
+    selection_signals:
+      - иерархия разделов
+      - selected item
+      - nested items
+      - верхняя или боковая навигация
+    contraindications:
+      - существует единственный линейный переход
+      - структура маршрутов не подтверждена требованиями
+    compatible_with: [ui-patterns.lists.data-table]
+    limitations:
+      - menu structure does not define project permissions or route ownership by itself
+
+  - id: ui-patterns.dialogs.modal-dialog
+    title: Модальный диалог с действиями
+    family: dialogs
+    pattern_type: DIALOG_OVERLAY_UI
+    decision_scope: overlay-block
+    status: active
+    card_path: диалоги/модальный-диалог.md
+    template_id: dialog-overlay-ui-modal
+    intent: Временно сфокусировать внимание на коротком контекстном взаимодействии поверх текущего экрана.
+    required_conditions:
+      - действие требует временного фокуса
+      - взаимодействие можно завершить в ограниченной области
+    selection_signals:
+      - confirmation
+      - короткая контекстная форма
+      - asynchronous operation
+      - явное разделение confirm и cancel
+    contraindications:
+      - содержание требует длительного чтения
+      - требуется сложная навигация
+      - действие можно выполнить без прерывания текущего контекста
+    compatible_with: [ui-patterns.forms.form-data-entry-validation]
+    limitations:
+      - dialog size, mobile behavior and full accessibility contract require project decisions
+
+  - id: ui-patterns.dashboards.dashboard-monitoring
+    title: Мониторинговая панель
+    family: dashboards
+    pattern_type: DASHBOARD_MONITORING_UI
+    decision_scope: screen-block
+    status: active
+    card_path: панели-мониторинга/панель-мониторинга.md
+    template_id: dashboard-monitoring-ui
+    intent: Обеспечить обзор ключевых показателей и интерактивное исследование связанных данных.
+    required_conditions: [несколько связанных показателей или визуализаций, необходимость обзора или исследования данных]
+    selection_signals: [KPI, визуальная иерархия, фильтрация, linked charts, drill-down]
+    contraindications: [достаточно одного простого показателя, отсутствует подтверждённый источник данных, не требуется сравнение или исследование]
+    version: 1.0
+    limitations: [полный accessibility и responsive контракт задаётся проектом, состояния данных и правила обновления задаются проектом]
+
+  - id: ui-patterns.mobile.mobile-touch-interface
+    title: Мобильный сенсорный интерфейс (mobile touch interface)
+    family: mobile
+    pattern_type: MOBILE_TOUCH_UI
+    decision_scope: screen-and-interaction
+    status: active
+    card_path: мобильные/мобильный-сенсорный-интерфейс.md
+    template_id: mobile-touch-ui
+    intent: Обеспечить выполнение пользовательской задачи на сенсорном устройстве через достижимые контролы, понятные переходы, стандартные жесты и доступные альтернативы основным действиям.
+    required_conditions:
+      - основной способ взаимодействия выполняется через touch
+      - экран должен работать на мобильном viewport
+      - требуется определить поведение при изменении orientation, safe area или software keyboard
+    selection_signals:
+      - tap, swipe, drag, touch-and-hold или zoom
+      - первичная навигация должна оставаться достижимой в рабочей области
+      - проект требует альтернативного способа ввода или доступности touch-взаимодействий
+    contraindications:
+      - основной сценарий выполняется только клавиатурой и указателем без touch-взаимодействия
+      - мобильный viewport, роли, действия или ограничения устройства не подтверждены
+      - решение зависит от жеста без видимой или доступной альтернативы
+    compatible_with: [ui-patterns.navigation.menu-navigation, ui-patterns.lists.data-table, ui-patterns.forms.form-data-entry-validation, ui-patterns.dialogs.modal-dialog]
+    limitations:
+      - platform-specific размеры touch-целей, responsive, offline и accessibility правила фиксируются проектом
+    version: 1.0

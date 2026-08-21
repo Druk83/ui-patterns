@@ -1,0 +1,27 @@
+@startuml
+title Модальный диалог с действиями
+
+skinparam shadowing false
+skinparam state {
+  BackgroundColor #E8F1FB
+  BorderColor #4169A1
+  ArrowColor #4169A1
+}
+
+[*] --> Closed
+state "Закрыт" as Closed #E8F1FB
+state "Открыт" as Open #FFF4CC
+state "Выполнение" as Loading #FFF4CC
+state "Ошибка операции" as ErrorState #FDE2E2
+state "Подтверждено" as Confirmed #E2F0D9
+state "Отменено" as Cancelled #E8F1FB
+
+Closed --> Open : открыть
+Open --> Loading : подтвердить
+Open --> Cancelled : отменить или закрыть
+Loading --> Confirmed : завершено
+Loading --> ErrorState : ошибка
+ErrorState --> Open : повторить или исправить
+Confirmed --> Closed : закрыть
+Cancelled --> Closed : вернуть контекст
+@enduml

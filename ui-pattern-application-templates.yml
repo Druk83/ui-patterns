@@ -1,0 +1,272 @@
+schema_version: 1
+
+kind: ui-pattern-application-templates
+
+templates:
+  - template_id: form-workflow-ui
+    pattern_id: ui-patterns.forms.form-data-entry-validation
+    output_scope: screen-block
+    required_inputs:
+      - screen_id
+      - route
+      - roles
+      - viewport
+      - orientation
+      - data_fields
+      - validation_rules
+      - submit_action
+      - reference_artifact
+    block_structure:
+      - block_role: form-container
+        required_fields: [purpose, data_source, field_order, layout]
+      - block_role: field-group
+        required_fields: [field_id, label, type, required, constraints, error_message]
+      - block_role: validation-feedback
+        required_fields: [field_binding, display_condition, focus_behavior, announcement]
+      - block_role: submit-action
+        required_fields: [action_id, availability, loading_state, success_transition, error_transition]
+      - block_role: operation-feedback
+        required_fields: [success_state, error_state, recovery_action]
+    required_state_decisions:
+      - initial
+      - editing
+      - disabled
+      - validation-error
+      - validating
+      - submitting
+      - success
+      - operation-error
+    required_actions:
+      - edit
+      - validate
+      - submit
+      - cancel-or-reset
+    required_transitions:
+      - editing-to-validation
+      - validation-error-to-editing
+      - validation-success-to-submitting
+      - submitting-to-success
+      - submitting-to-operation-error
+    required_checks:
+      - field-label-and-value-association
+      - required-and-optional-field-rules
+      - validation-message-placement
+      - focus-after-validation-error
+      - submit-loading-and-duplicate-submit-prevention
+      - success-and-recovery-behavior
+      - narrow-viewport-field-layout
+
+  - template_id: list-detail-ui-data-table
+    pattern_id: ui-patterns.lists.data-table
+    output_scope: screen-block
+    required_inputs:
+      - screen_id
+      - route
+      - roles
+      - viewport
+      - orientation
+      - data_source
+      - columns
+      - row_identity
+      - collection_actions
+      - reference_artifact
+    block_structure:
+      - block_role: collection-container
+        required_fields: [purpose, data_source, row_identity, ordering]
+      - block_role: table-header
+        required_fields: [columns, sort_rules, label_strategy]
+      - block_role: filter-and-search
+        required_fields: [fields, trigger, reset_action, empty_result]
+      - block_role: table-body
+        required_fields: [row_fields, loading_state, empty_state, error_state]
+      - block_role: row-actions
+        required_fields: [action_id, availability, confirmation, success_transition, error_transition]
+      - block_role: pagination
+        required_fields: [page_size, navigation_actions, loading_behavior, boundary_behavior]
+    required_state_decisions:
+      - loading
+      - populated
+      - empty
+      - filtered-empty
+      - sorted
+      - error
+      - disabled-action
+    required_actions:
+      - search
+      - filter
+      - reset-filter
+      - sort
+      - change-page
+      - row-action
+    required_transitions:
+      - unfiltered-to-filtered
+      - collection-to-sorted
+      - page-to-page
+      - row-to-detail-or-action
+      - error-to-retry
+    required_checks:
+      - column-meaning-and-order
+      - row-identity
+      - loading-empty-error-states
+      - filter-and-reset-behavior
+      - sort-and-pagination-behavior
+      - row-action-confirmation-and-recovery
+      - narrow-viewport-overflow
+
+  - template_id: navigation-content-ui-menu
+    pattern_id: ui-patterns.navigation.menu-navigation
+    output_scope: screen-region
+    required_inputs:
+      - screen_id
+      - route_map
+      - roles
+      - selected_route
+      - viewport
+      - orientation
+      - reference_artifact
+    block_structure:
+      - block_role: navigation-region
+        required_fields: [purpose, accessible_name, placement, hierarchy]
+      - block_role: menu-item
+        required_fields: [item_id, label, route, role_visibility, selected_condition]
+      - block_role: submenu
+        required_fields: [parent_item, open_condition, close_condition, child_order]
+      - block_role: collapsed-navigation
+        required_fields: [trigger, expanded_state, focus_behavior, viewport_condition]
+    required_state_decisions:
+      - selected
+      - opened-submenu
+      - closed-submenu
+      - collapsed
+      - expanded
+      - disabled
+      - unavailable-route
+    required_actions:
+      - open-item
+      - close-item
+      - navigate
+      - expand-or-collapse
+    required_transitions:
+      - menu-item-to-route
+      - closed-submenu-to-open-submenu
+      - expanded-to-collapsed
+      - unavailable-route-to-error
+    required_checks:
+      - route-and-label-ownership
+      - selected-and-open-state
+      - keyboard-navigation
+      - screen-reader-structure
+      - focus-after-route-change
+      - collapsed-navigation-at-supported-viewport
+      - deep-link-and-back-navigation
+
+  - template_id: dialog-overlay-ui-modal
+    pattern_id: ui-patterns.dialogs.modal-dialog
+    output_scope: overlay-block
+    required_inputs:
+      - screen_id
+      - trigger
+      - purpose
+      - roles
+      - content
+      - primary_action
+      - secondary_action
+      - viewport
+      - reference_artifact
+    block_structure:
+      - block_role: dialog-trigger
+        required_fields: [trigger_id, availability, open_transition]
+      - block_role: dialog-overlay
+        required_fields: [modal_behavior, background_interaction, close_policy]
+      - block_role: dialog-content
+        required_fields: [title, description, fields, content_size]
+      - block_role: dialog-actions
+        required_fields: [primary_action, secondary_action, cancel_action, availability]
+      - block_role: dialog-feedback
+        required_fields: [loading_state, success_state, error_state, recovery_action]
+    required_state_decisions:
+      - closed
+      - open
+      - submitting
+      - success
+      - error
+      - asynchronous-close
+    required_actions:
+      - open
+      - confirm
+      - cancel
+      - close
+      - retry-or-recover
+    required_transitions:
+      - closed-to-open
+      - open-to-confirm
+      - open-to-cancel
+      - open-to-error
+      - error-to-retry-or-recover
+      - success-to-closed
+    required_checks:
+      - dialog-purpose-and-content-size
+      - title-and-description-association
+      - focus-entry-and-focus-return
+      - escape-and-dismiss-policy
+      - primary-secondary-cancel-actions
+      - loading-success-error-feedback
+      - background-interaction-policy
+      - narrow-viewport-dialog-behavior
+
+  - template_id: dashboard-monitoring-ui
+    pattern_id: ui-patterns.dashboards.dashboard-monitoring
+    output_scope: screen-block
+    required_inputs: [screen_id, route, roles, viewport, orientation, data_source, metric_definitions, dashboard_mode, time_range, filters, reference_artifact]
+    required_blocks:
+      - dashboard-container: [purpose, dashboard_mode, data_source, refresh_behavior]
+      - metric-summary: [metric_id, label, value, unit, priority, comparison]
+      - visualization-grid: [visualization_id, data_binding, chart_purpose, hierarchy, legend]
+      - filter-controls: [filter_id, field, value_set, trigger, reset_action]
+      - drill-down: [source_visualization, target_detail, condition, data_preservation]
+      - annotation: [target, meaning, visibility_condition]
+    required_states: [initial, loading, populated, empty, filtered, error, stale]
+    required_actions: [filter, search, sort, roll-up, drill-down, reset-filter, retry]
+    required_transitions: [dashboard-to-filtered-view, dashboard-to-sorted-view, dashboard-to-rolled-up-view, dashboard-to-drilled-down-view, error-to-retry, chart-to-linked-chart-update]
+    required_checks: [dashboard-purpose-and-mode, metric-priority-and-limit, visual-hierarchy, consistent-color-assignment, whitespace-and-layout, linked-chart-update, annotation-meaning, loading-empty-error-states, accessibility-alternative, narrow-viewport-behavior]
+
+  - template_id: mobile-touch-ui
+    pattern_id: ui-patterns.mobile.mobile-touch-interface
+    output_scope: screen-and-interaction
+    required_inputs:
+      - screen_id
+      - route
+      - roles
+      - platform
+      - viewport
+      - orientation
+      - safe_area
+      - data_source
+      - primary_actions
+      - gesture_map
+      - navigation_model
+      - keyboard_fallback
+      - accessibility_profile
+      - reference_artifact
+    required_blocks:
+      - mobile-shell: [purpose, platform, viewport, orientation, safe_area, keyboard_behavior]
+      - primary-navigation: [navigation_model, back_action, reachability, focus_order]
+      - content-or-task: [purpose, data_source, content_priority, scroll_behavior]
+      - touch-actions: [action_id, gesture, target_size, target_unit, feedback, alternative_action, availability]
+      - state-feedback: [state_id, entry_condition, visible_change, available_actions, recovery_action]
+      - accessibility-fallback: [accessible_name, role, alternative_input, focus_or_scan_order]
+    required_states: [initial, loading, content, empty, error, offline, disabled, pressed, gesture-feedback, keyboard-visible]
+    required_actions: [tap, swipe, drag, touch-and-hold, zoom, navigate-back, retry, dismiss, keyboard-or-assistive-action]
+    required_transitions: [initial-to-loading, loading-to-content, loading-to-error, content-to-empty, content-to-next-screen, error-to-retry, gesture-to-feedback, keyboard-visible-to-restored-layout]
+    required_checks:
+      - platform-and-device-scope
+      - viewport-orientation-and-safe-area
+      - platform-specific-touch-target-size-and-spacing
+      - reachable-primary-navigation
+      - visible-alternative-to-essential-gestures
+      - gesture-feedback-and-conflict-check
+      - keyboard-and-assistive-input-fallback
+      - accessible-name-role-and-focus-order
+      - loading-empty-error-offline-recovery
+      - portrait-landscape-reflow-and-overflow
+      - text-scaling-and-contrast
