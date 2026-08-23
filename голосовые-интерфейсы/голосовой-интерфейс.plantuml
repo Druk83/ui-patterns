@@ -1,0 +1,40 @@
+@startuml
+title Голосовой интерфейс: обработка голосовой команды
+
+skinparam shadowing false
+skinparam state {
+  BackgroundColor #E8F1FB
+  BorderColor #4169A1
+  ArrowColor #4169A1
+}
+
+[*] --> Inactive
+state "Неактивен" as Inactive #E8F1FB
+state "Доступ запрещён" as PermissionDenied #FDE2E2
+state "Прослушивание" as Listening #FFF4CC
+state "Обработка речи" as Processing #FFF4CC
+state "Неоднозначно" as Ambiguous #FDE2E2
+state "Ожидание подтверждения" as Confirming #FFF4CC
+state "Ответ" as Responding #FFF4CC
+state "Успешно" as Success #E2F0D9
+state "Ошибка" as ErrorState #FDE2E2
+state "Отменено" as Cancelled #E8F1FB
+
+Inactive --> Listening : активировать
+Inactive --> PermissionDenied : нет разрешения
+PermissionDenied --> Inactive : перейти к доступной альтернативе
+Listening --> Processing : завершить речь
+Listening --> Cancelled : остановить или тайм-аут
+Processing --> Ambiguous : уверенность недостаточна
+Processing --> Responding : команда определена
+Ambiguous --> Confirming : уточнить команду
+Ambiguous --> Listening : повторить
+Confirming --> Success : подтвердить
+Confirming --> Cancelled : отменить
+Responding --> Success : ответ завершён
+Responding --> ErrorState : ошибка канала
+ErrorState --> Listening : повторить
+Listening --> Cancelled : переключиться на визуальное управление
+Success --> Inactive : завершить
+Cancelled --> Inactive : вернуть управление
+@enduml

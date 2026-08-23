@@ -1,0 +1,34 @@
+@startuml
+title Текстовый интерфейс: работа с терминальным экраном
+
+skinparam shadowing false
+skinparam state {
+  BackgroundColor #E8F1FB
+  BorderColor #4169A1
+  ArrowColor #4169A1
+}
+
+[*] --> Initial
+state "Начало" as Initial #E8F1FB
+state "Готов" as Ready #E8F1FB
+state "Фокус установлен" as Focused #FFF4CC
+state "Изменён размер" as Resized #FFF4CC
+state "Выполнение" as Running #FFF4CC
+state "Ошибка" as ErrorState #FDE2E2
+state "Отключён" as Disconnected #FDE2E2
+state "Переподключение" as Reconnecting #FFF4CC
+state "Завершён" as Exited #E8F1FB
+
+Initial --> Ready : открыть экран
+Ready --> Focused : навигировать и выбрать
+Focused --> Resized : изменить размер
+Resized --> Focused : применить раскладку
+Ready --> Running : открыть или выполнить
+Running --> ErrorState : ошибка
+ErrorState --> Ready : закрыть сообщение
+Ready --> Disconnected : потеря соединения
+Disconnected --> Reconnecting : переподключить
+Reconnecting --> Ready : соединение восстановлено
+Reconnecting --> Disconnected : восстановление не удалось
+Ready --> Exited : выйти
+@enduml

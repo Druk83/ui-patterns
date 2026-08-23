@@ -1,0 +1,32 @@
+@startuml
+title Естественное взаимодействие: обработка жеста или действия
+
+skinparam shadowing false
+skinparam state {
+  BackgroundColor #E8F1FB
+  BorderColor #4169A1
+  ArrowColor #4169A1
+}
+
+[*] --> Initial
+state "Начало" as Initial #E8F1FB
+state "Готово" as Ready #E8F1FB
+state "Активное действие" as Active #FFF4CC
+state "Обратная связь" as Feedback #FFF4CC
+state "Неверный ввод" as InvalidInput #FDE2E2
+state "Заблокировано" as Blocked #FDE2E2
+state "Доступ запрещён" as PermissionDenied #FDE2E2
+state "Восстановлено" as Recovered #E2F0D9
+
+Initial --> Ready : подготовить ввод
+Ready --> Active : выполнить жест или действие
+Active --> Feedback : распознать ввод
+Active --> InvalidInput : ввод не распознан
+Active --> Blocked : действие ограничено
+Feedback --> Ready : показать результат
+InvalidInput --> Ready : показать альтернативу
+Blocked --> Recovered : устранить ограничение
+PermissionDenied --> Recovered : переключить способ ввода
+Ready --> PermissionDenied : нет разрешения
+Recovered --> Ready : продолжить
+@enduml

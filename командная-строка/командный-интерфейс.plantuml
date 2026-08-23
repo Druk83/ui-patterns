@@ -1,0 +1,36 @@
+@startuml
+title Командный интерфейс: выполнение команды
+
+skinparam shadowing false
+skinparam state {
+  BackgroundColor #E8F1FB
+  BorderColor #4169A1
+  ArrowColor #4169A1
+}
+
+[*] --> Idle
+state "Ожидание" as Idle #E8F1FB
+state "Разбор команды" as Parsing #FFF4CC
+state "Некорректная команда" as Invalid #FDE2E2
+state "Готово к выполнению" as Ready #E8F1FB
+state "Выполнение" as Running #FFF4CC
+state "Успешно" as Success #E2F0D9
+state "Ошибка" as ErrorState #FDE2E2
+state "Отменено" as Cancelled #E8F1FB
+state "Доступ запрещён" as Denied #FDE2E2
+
+Idle --> Parsing : ввести и отправить
+Idle --> Idle : показать справку или автодополнение
+Parsing --> Invalid : ошибка синтаксиса
+Parsing --> Ready : команда корректна
+Invalid --> Parsing : исправить и повторить
+Ready --> Running : выполнить
+Ready --> Denied : нет разрешения
+Running --> Success : завершено
+Running --> ErrorState : ошибка
+Running --> Cancelled : отменить
+ErrorState --> Parsing : повторить
+Denied --> Idle : восстановить доступ
+Cancelled --> Idle : вернуть управление
+Success --> Idle : принять результат
+@enduml

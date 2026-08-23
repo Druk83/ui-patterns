@@ -8,10 +8,13 @@ package:
   required:
     - spec_id
     - version
+    - template_set_version
     - status
     - source_refs
     - screen_manifest
     - pattern_refs
+    - principle_decisions
+    - ia_decisions
     - acceptance_refs
   status_values:
     - draft
@@ -25,6 +28,11 @@ screen_manifest:
     - title
     - route
     - purpose
+    - interface_type
+    - usage_context
+    - interface_modality
+    - data_scale_and_performance
+    - integration_and_component_constraints
     - roles
     - viewport
     - orientation
@@ -32,8 +40,45 @@ screen_manifest:
     - states
     - blocks
     - reference_artifacts
+    - applied_templates
+    - principle_profiles
+    - principle_decisions
+    - information_architecture_profiles
+    - ia_decisions
+    - risk_and_ethics
     - status
     - acceptance_refs
+
+usage_context:
+  required:
+    - environment
+    - device_and_viewport
+    - usage_frequency
+    - task_criticality
+    - user_preparation
+
+interface_modality:
+  required:
+    - input_channels
+    - output_channels
+    - primary_modality
+    - fallback_modality
+
+data_scale_and_performance:
+  required:
+    - data_volume_class
+    - loading_strategy
+    - update_frequency
+    - response_expectation
+    - long_operation_behavior
+
+integration_and_component_constraints:
+  required:
+    - data_integrations
+    - external_services
+    - component_system
+    - design_tokens
+    - compatibility_constraints
 
 block:
   required:
@@ -95,6 +140,60 @@ traceability:
     - scenario_refs
     - pattern_refs
     - acceptance_refs
+
+principle_decision:
+  required:
+    - principle_id
+    - applicability
+    - decision
+    - implementation_rule
+    - affected_ui_refs
+    - verification_method
+    - status
+  applicability_values:
+    - required
+    - recommended
+    - not_applicable
+    - gap
+  status_values:
+    - confirmed
+    - assumption
+    - gap
+    - not_applicable
+
+ia_decision:
+  required:
+    - ia_decision_id
+    - ia_principle_id
+    - applicability
+    - scope
+    - decision
+    - rationale
+    - affected_ui_refs
+    - verification_method
+    - status
+  applicability_values:
+    - required
+    - recommended
+    - not_applicable
+    - gap
+  status_values:
+    - confirmed
+    - assumption
+    - gap
+    - not_applicable
+
+risk_and_ethics:
+  required:
+    - behavioral_influence
+    - user_benefit
+    - foreseeable_harm
+    - safeguards
+    - non_happy_path_coverage
+  behavioral_influence_values:
+    - none
+    - possible
+    - intended
 
 gap:
   required:

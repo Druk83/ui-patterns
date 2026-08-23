@@ -1,0 +1,36 @@
+@startuml
+title Интерфейс визуализации процесса: выполнение этапов
+
+skinparam shadowing false
+skinparam state {
+  BackgroundColor #E8F1FB
+  BorderColor #4169A1
+  ArrowColor #4169A1
+}
+
+[*] --> Loading
+state "Загрузка" as Loading #FFF4CC
+state "Обзор процесса" as Overview #E8F1FB
+state "Отфильтровано" as Filtered #FFF4CC
+state "Элемент выбран" as ItemSelected #FFF4CC
+state "Переход ожидает подтверждения" as TransitionPending #FFF4CC
+state "Обновлено" as Updated #E2F0D9
+state "Только чтение" as ReadOnly #E8F1FB
+state "Конфликт" as Conflict #FDE2E2
+state "Ошибка" as ErrorState #FDE2E2
+
+Loading --> Overview : загрузка завершена
+Overview --> Filtered : поиск или фильтрация
+Filtered --> Overview : сбросить фильтр
+Overview --> ItemSelected : открыть элемент
+Filtered --> ItemSelected : открыть элемент
+ItemSelected --> TransitionPending : изменить переход или порядок
+TransitionPending --> Updated : подтвердить переход
+TransitionPending --> ErrorState : ошибка перехода
+Overview --> ReadOnly : действие недоступно
+Updated --> Overview : обновить обзор
+Updated --> Conflict : обнаружена рассинхронизация
+Conflict --> Updated : восстановить версию
+Conflict --> ErrorState : восстановление не удалось
+ErrorState --> Overview : повторить
+@enduml

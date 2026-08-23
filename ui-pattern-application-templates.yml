@@ -2,10 +2,86 @@ schema_version: 1
 
 kind: ui-pattern-application-templates
 
+template_status_values: [active, candidate, superseded]
+candidate_selection_policy:
+  status: candidate
+  selection_status: not_selectable
+  required_before_activation:
+    - confirmed_sources
+    - resolved_boundaries
+    - source_provenance
+    - application_checks
+
+ux_principle_profiles:
+  record_required_fields:
+    - principle_id
+    - applicability
+    - decision
+    - implementation_rule
+    - affected_ui_refs
+    - verification_method
+    - status
+  status_values: [confirmed, assumption, gap, not_applicable]
+  profiles:
+    common-ui:
+      principle_ids:
+        - mental-model-and-familiarity
+        - choice-and-cognitive-load
+        - information-grouping
+        - attention-and-priority
+        - completion-experience
+    input-and-recovery:
+      principle_ids:
+        - target-acquisition
+        - input-tolerance
+        - feedback-and-waiting
+        - completion-experience
+    complex-workflow:
+      principle_ids:
+        - choice-and-cognitive-load
+        - information-grouping
+        - complexity-allocation
+        - completion-experience
+    responsive-and-mobile:
+      principle_ids:
+        - target-acquisition
+        - input-tolerance
+        - information-grouping
+        - feedback-and-waiting
+    ethical-and-non-happy-path:
+      principle_ids:
+        - complexity-allocation
+        - completion-experience
+        - ethical-impact
+
+information_architecture_profiles:
+  record_required_fields:
+    - ia_principle_id
+    - applicability
+    - decision
+    - rationale
+    - affected_ui_refs
+    - verification_method
+    - status
+  applicability_values: [required, recommended, not_applicable, gap]
+  status_values: [confirmed, assumption, gap, not_applicable]
+  profiles:
+    core-information-architecture:
+      principle_ids:
+        - content-as-objects
+        - focused-choice
+        - progressive-disclosure
+        - content-patterns
+        - entry-points
+        - multiple-classification
+        - purposeful-navigation
+        - scalable-growth
+
 templates:
   - template_id: form-workflow-ui
     pattern_id: ui-patterns.forms.form-data-entry-validation
     output_scope: screen-block
+    principle_profiles: [common-ui, input-and-recovery]
     required_inputs:
       - screen_id
       - route
@@ -59,6 +135,7 @@ templates:
   - template_id: list-detail-ui-data-table
     pattern_id: ui-patterns.lists.data-table
     output_scope: screen-block
+    principle_profiles: [common-ui, input-and-recovery]
     required_inputs:
       - screen_id
       - route
@@ -116,6 +193,7 @@ templates:
   - template_id: navigation-content-ui-menu
     pattern_id: ui-patterns.navigation.menu-navigation
     output_scope: screen-region
+    principle_profiles: [common-ui]
     required_inputs:
       - screen_id
       - route_map
@@ -163,6 +241,7 @@ templates:
   - template_id: dialog-overlay-ui-modal
     pattern_id: ui-patterns.dialogs.modal-dialog
     output_scope: overlay-block
+    principle_profiles: [common-ui, input-and-recovery]
     required_inputs:
       - screen_id
       - trigger
@@ -217,6 +296,7 @@ templates:
   - template_id: dashboard-monitoring-ui
     pattern_id: ui-patterns.dashboards.dashboard-monitoring
     output_scope: screen-block
+    principle_profiles: [common-ui, input-and-recovery]
     required_inputs: [screen_id, route, roles, viewport, orientation, data_source, metric_definitions, dashboard_mode, time_range, filters, reference_artifact]
     required_blocks:
       - dashboard-container: [purpose, dashboard_mode, data_source, refresh_behavior]
@@ -233,6 +313,7 @@ templates:
   - template_id: mobile-touch-ui
     pattern_id: ui-patterns.mobile.mobile-touch-interface
     output_scope: screen-and-interaction
+    principle_profiles: [common-ui, input-and-recovery, responsive-and-mobile]
     required_inputs:
       - screen_id
       - route
@@ -270,3 +351,486 @@ templates:
       - loading-empty-error-offline-recovery
       - portrait-landscape-reflow-and-overflow
       - text-scaling-and-contrast
+
+  - template_id: multi-step-workflow-ui
+    scope: cross-cutting
+    pattern_id: null
+    output_scope: screen-and-workflow
+    principle_profiles: [complex-workflow]
+    applies_when:
+      - task_has_ordered_steps
+      - each_step_has_a_distinct_goal
+      - user_must_review_or_confirm_progress
+    required_inputs:
+      - workflow_id
+      - step_sequence
+      - step_goals
+      - step_validation
+      - data_preservation
+      - back_navigation_policy
+      - resume_policy
+      - completion_action
+    required_blocks:
+      - step-indicator: [current_step, completed_steps, available_steps, label_strategy]
+      - current-step: [step_id, purpose, fields_or_actions, validation]
+      - workflow-navigation: [next_action, back_action, cancel_action, availability]
+      - review-and-completion: [summary, correction_path, submit_action, result_feedback]
+    required_states: [initial, editing, invalid-step, saved, submitting, success, error, resumed]
+    required_actions: [next, back, save, cancel, review, submit, resume, retry]
+    required_transitions: [step-to-next, step-to-back, step-to-invalid, workflow-to-review, review-to-submit, submit-to-success, submit-to-error, error-to-retry]
+    required_checks:
+      - one_primary_decision_group_per_step
+      - progress_and_current_step_are_visible
+      - entered_data_is_preserved_after_navigation
+      - step_validation_does_not_hide_recovery
+      - final_review_exposes_corrections
+      - interrupted_workflow_can_resume_or_is_explicitly_discarded
+
+  - template_id: stateful-action-ui
+    scope: cross-cutting
+    pattern_id: null
+    output_scope: action-and-state
+    principle_profiles: [input-and-recovery, complex-workflow, ethical-and-non-happy-path]
+    applies_when:
+      - operation_can_outlive_immediate_response
+      - operation_requires_progress_or_status
+      - operation_can_be_cancelled_retried_or_resumed
+    required_inputs:
+      - action_id
+      - operation_duration_class
+      - progress_model
+      - cancellation_policy
+      - retry_policy
+      - idempotency_policy
+      - result_persistence
+      - failure_recovery
+    required_blocks:
+      - action-feedback: [action_id, phase, visible_status, feedback_channel]
+      - progress-indicator: [progress_type, value_or_message, completion_condition]
+      - cancellation-control: [availability, confirmation, rollback_or_partial_result]
+      - recovery-feedback: [error_description, retry_action, support_path, preserved_data]
+    required_states: [idle, queued, running, paused, cancelling, success, error, cancelled, retrying]
+    required_actions: [start, cancel, pause, resume, retry, dismiss, inspect-result]
+    required_transitions: [idle-to-queued, queued-to-running, running-to-success, running-to-error, running-to-cancelling, cancelling-to-cancelled, error-to-retrying, paused-to-resumed]
+    required_checks:
+      - immediate_feedback_for_action_start
+      - long_operation_has_visible_progress_or_explanation
+      - duplicate_submission_is_prevented
+      - cancellation_result_is_explicit
+      - retry_does_not_duplicate_or_corrupt_data
+      - success_and_error_are_distinguishable
+      - interrupted_operation_has_recovery_or_gap
+
+  - template_id: progressive-onboarding-ui
+    scope: cross-cutting
+    pattern_id: null
+    output_scope: screen-and-guidance
+    principle_profiles: [common-ui, complex-workflow, ethical-and-non-happy-path]
+    applies_when:
+      - user_is_new_to_the_context
+      - task_requires_new_concepts_or_steps
+      - guidance_can_be_delivered_during_use
+    required_inputs:
+      - user_goal
+      - existing_knowledge_assumption
+      - guidance_scope
+      - disclosure_sequence
+      - skip_policy
+      - resume_policy
+      - contextual_help
+      - completion_signal
+    required_blocks:
+      - entry-guidance: [purpose, user_goal, start_action, skip_action]
+      - guided-step: [step_id, instruction, related_ui_ref, completion_condition]
+      - contextual-help: [trigger, content, placement, dismissal]
+      - onboarding-completion: [completion_signal, next_action, reopen_path]
+    required_states: [not-started, active, skipped, paused, completed, resumed]
+    required_actions: [start, continue, back, skip, pause, resume, reopen, dismiss]
+    required_transitions: [not-started-to-active, active-to-next-step, active-to-skipped, active-to-paused, paused-to-resumed, active-to-completed]
+    required_checks:
+      - guidance_does_not_block_the_primary_task_without_justification
+      - each_step_has_one_clear_goal
+      - guidance_is_available_in_context_of_use
+      - skip_and_resume_behavior_is_explicit
+      - onboarding_does_not_require_memorizing_hidden_rules
+      - completion_and_reopen_paths_are_accessible
+
+  - template_id: responsive-ui
+    scope: cross-cutting
+    pattern_id: null
+    output_scope: viewport-and-layout
+    principle_profiles: [responsive-and-mobile, common-ui]
+    applies_when:
+      - more_than_one_viewport_or_orientation_is_supported
+      - layout_or_priority_changes_between_viewports
+    required_inputs:
+      - supported_viewports
+      - supported_orientations
+      - breakpoint_or_change_conditions
+      - block_priority
+      - overflow_policy
+      - focus_order_policy
+      - text_scaling_policy
+    required_blocks:
+      - layout-variant: [viewport_condition, composition, order, visibility]
+      - priority-preservation: [essential_content, essential_actions, deferred_content]
+      - overflow-and-scroll: [axis, ownership, boundary_behavior, recovery]
+    required_states: [wide, compact, narrow, portrait, landscape, overflow]
+    required_actions: [resize, rotate, expand, collapse, scroll, restore-layout]
+    required_transitions: [wide-to-compact, compact-to-narrow, portrait-to-landscape, layout-to-overflow, overflow-to-restored]
+    required_checks:
+      - essential_content_and_actions_remain_available
+      - block_order_and_grouping_remain_meaningful
+      - focus_order_matches_visual_or_logical_order
+      - overflow_owner_and_scroll_boundary_are_explicit
+      - text_scaling_does_not_destroy_completion_of_the_task
+      - orientation_change_preserves_or_recovers_user_data
+
+  - template_id: information-architecture-ui
+    scope: cross-cutting
+    pattern_id: null
+    output_scope: content-and-navigation
+    information_architecture_profiles: [core-information-architecture]
+    applies_when:
+      - screen_contains_multiple_content_types_or_routes
+      - user_can_find_content_by_browse_search_or_contextual_links
+      - content_labels_or_relationships_affect_task_completion
+      - content_structure_must_grow_beyond_current_scope
+    required_inputs:
+      - content_inventory
+      - content_types_and_relationships
+      - content_lifecycle
+      - findability_modes
+      - labels_and_user_vocabulary
+      - entry_points
+      - navigation_scope
+      - content_growth_expectation
+      - information_architecture_validation
+      - reference_artifact
+    required_blocks:
+      - content-model: [content_types, attributes, lifecycle, relationships]
+      - organization-model: [model, scope, grouping, hierarchy, access_paths]
+      - labeling-system: [label_id, label, user_term, meaning, ambiguity_resolution]
+      - navigation-model: [global, local, contextual, entry_points, back_behavior]
+      - findability: [search, browse, filters, zero_results, related_content]
+      - structure-artifact: [artifact_type, path_or_url, status, affected_ui_refs]
+    required_states: [initial, loading, empty, zero-results, restricted, deep-link, not-found]
+    required_actions: [browse, search, filter, open-entry-point, navigate-back, retry-or-recover]
+    required_transitions: [entry-to-content, content-to-related-content, search-to-results, search-to-zero-results, deep-link-to-content, not-found-to-recovery]
+    required_checks:
+      - content_inventory_covers_all_user_visible_types
+      - content_relationships_and_lifecycle_are_explicit
+      - organization_model_matches_scope_and_user_findability_modes
+      - labels_use_user_vocabulary_or_have_justified_deviations
+      - each_entry_point_identifies_context_and_next_available_actions
+      - global_local_and_contextual_navigation_are_distinguished
+      - search_browse_and_filter_paths_are_not_mutually_exclusive_without_reason
+      - zero_results_not_found_and_restricted_content_have_recovery
+      - deep_links_preserve_identity_context_and_back_navigation
+      - structure_can_grow_without_uncontrolled_navigation_complexity
+      - information_architecture_is_validated_by_declared_method
+
+  - template_id: cli-command-ui
+    status: active
+    selection_status: selectable
+    pattern_id: ui-patterns.command-line.command-interface
+    output_scope: terminal-interaction
+    applies_when:
+      - user_or_automation_executes_commands
+      - repeatable_administrative_or_automation_action_is_required
+      - graphical_viewport_is_not_required
+    required_inputs:
+      - interface_id
+      - execution_environment
+      - user_roles
+      - command_model
+      - command_syntax
+      - output_contract
+      - security_policy
+      - audit_policy
+      - long_operation_policy
+      - reference_artifact
+    required_blocks:
+      - command-input: [syntax, arguments, quoting, autocomplete, history]
+      - command-help: [scope, invocation, examples_policy, accessibility]
+      - command-validation: [validation_stage, error_format, correction_path]
+      - command-output: [format, identity, ordering, machine_readable_mode]
+      - operation-feedback: [phase, progress, completion, cancellation]
+      - dangerous-action-confirmation: [trigger, explanation, confirmation, recovery]
+    required_states: [idle, parsing, invalid-command, ready, running, success, error, cancelled, permission-denied]
+    required_actions: [enter-command, show-help, autocomplete, execute, confirm-dangerous-action, cancel, retry]
+    required_transitions: [idle-to-parsing, parsing-to-invalid-command, parsing-to-ready, ready-to-running, running-to-success, running-to-error, running-to-cancelled, permission-denied-to-recovery]
+    required_checks:
+      - command_and_argument_contract_is_explicit
+      - syntax_error_identifies_correction_path
+      - dangerous_operations_require_confirmed_intent
+      - security_and_audit_policy_are_explicit
+      - permission_denied_does_not_leak_sensitive_information
+      - output_has_human_and_declared_machine_readable_modes
+      - long_operation_has_progress_or_explanation
+      - cancellation_and_retry_do_not_duplicate_side_effects
+      - exit_status_and_error_contract_are_documented
+
+  - template_id: conversational-ui
+    status: active
+    selection_status: selectable
+    pattern_id: ui-patterns.conversational.conversational-interface
+    output_scope: conversation-and-task
+    applies_when:
+      - task_is_expressed_as_question_or_dialogue
+      - system_must_clarify_intent_or_missing_data
+      - user_needs_contextual_help_or_content_search
+    required_inputs:
+      - conversation_id
+      - user_goal
+      - intent_model
+      - context_retention_policy
+      - privacy_policy
+      - action_confirmation_policy
+      - fallback_and_handoff_policy
+      - reference_artifact
+    required_blocks:
+      - conversation-shell: [entry_point, message_order, context_indicator, reset_action]
+      - user-message: [input_method, content, validation, send_action]
+      - assistant-response: [response_content, source_or_basis, status, next_actions]
+      - clarification: [ambiguity, question, answer_options, correction_path]
+      - action-confirmation: [action, impact, confirmation, cancel_action]
+      - fallback-and-handoff: [failure_reason, retry, alternative_channel, handoff_status]
+    required_states: [initial, waiting-input, understanding, clarifying, responding, awaiting-confirmation, executing, success, error, handed-off]
+    required_actions: [send, clarify, confirm, cancel, retry, reset, handoff]
+    required_transitions: [initial-to-waiting-input, message-to-understanding, understanding-to-clarifying, understanding-to-responding, response-to-confirmation, confirmation-to-executing, executing-to-success, error-to-retry, error-to-handoff]
+    required_checks:
+      - conversation_goal_and_context_are_visible
+      - ambiguity_has_explicit_clarification_path
+      - external_effect_requires_confirmation
+      - response_basis_or_source_is_recorded_when_required
+      - failure_does_not_leave_user_without_recovery
+      - context_retention_and_deletion_are_explicit
+      - handoff_preserves_required_context_without_exposing_private_data
+
+  - template_id: voice-ui
+    status: active
+    selection_status: selectable
+    pattern_id: ui-patterns.voice.voice-interface
+    output_scope: voice-and-task
+    applies_when:
+      - hands_free_interaction_is_required
+      - voice_is_available_and_allowed_in_the_environment
+      - task_can_be_completed_with_short_speech_turns
+    required_inputs:
+      - voice_channel
+      - activation_policy
+      - supported_locales
+      - recognition_policy
+      - audio_feedback
+      - visual_fallback
+      - privacy_policy
+      - audio_and_transcript_retention_policy
+      - confirmation_policy
+      - reference_artifact
+    required_blocks:
+      - activation: [trigger, permission, recording_indicator, stop_action]
+      - listening: [active_state, timeout, interruption, noise_behavior]
+      - recognized-command: [transcript, confidence_policy, correction_action]
+      - voice-confirmation: [ambiguous_or_dangerous_action, prompt, confirm, cancel]
+      - response: [voice_output, visual_output, completion_signal]
+      - recognition-error: [reason, repeat_action, visual_alternative, recovery]
+    required_states: [inactive, permission-denied, listening, processing, ambiguous, awaiting-confirmation, responding, success, error, cancelled]
+    required_actions: [activate, speak, confirm, repeat, cancel, stop-listening, switch-to-visual]
+    required_transitions: [inactive-to-listening, listening-to-processing, processing-to-ambiguous, processing-to-responding, ambiguous-to-confirmation, confirmation-to-success, recognition-error-to-repeat, listening-to-cancelled]
+    required_checks:
+      - recording_state_and_stop_action_are_visible
+      - recognition_error_has_repeat_and_non_voice_alternative
+      - dangerous_action_requires_explicit_confirmation
+      - audio_and_transcript_retention_are_explicit
+      - response_is_available_in_a_non_audio_channel_when_required
+      - noise_pause_interruption_and_timeout_are_defined
+
+  - template_id: text-terminal-ui
+    status: active
+    selection_status: selectable
+    pattern_id: ui-patterns.text.text-interface
+    output_scope: terminal-screen
+    applies_when:
+      - full_screen_text_layout_is_required
+      - keyboard_navigation_replaces_graphical_controls
+      - terminal_or_remote_session_is_the_primary_environment
+    required_inputs:
+      - terminal_environment
+      - minimum_terminal_size
+      - panel_layout
+      - keyboard_map
+      - focus_policy
+      - encoding_and_localization
+      - session_recovery_policy
+      - reference_artifact
+    required_blocks:
+      - terminal-shell: [title, status, exit_action, terminal_constraints]
+      - content-panel: [panel_id, purpose, content, scroll_behavior]
+      - menu-or-list: [items, selection, keyboard_actions, disabled_items]
+      - message-area: [message_type, priority, retention, recovery_action]
+      - focus-indicator: [focused_element, focus_order, restore_policy]
+      - session-recovery: [disconnect_state, reconnect_action, data_preservation]
+    required_states: [initial, ready, focused, resized, running, error, disconnected, reconnecting, exited]
+    required_actions: [navigate, select, open, resize, cancel, reconnect, exit]
+    required_transitions: [initial-to-ready, ready-to-focused, focused-to-resized, ready-to-running, running-to-error, ready-to-disconnected, disconnected-to-reconnecting, reconnecting-to-ready, ready-to-exited]
+    required_checks:
+      - cli_and_tui_boundaries_are_explicit
+      - minimum_size_and_resize_behavior_are_defined
+      - keyboard_navigation_and_focus_are_complete
+      - status_and_error_messages_are_distinguishable
+      - disconnect_preserves_or_discards_data_explicitly
+      - terminal_encoding_and_localization_are_declared
+
+  - template_id: natural-interaction-ui
+    status: active
+    selection_status: selectable
+    pattern_id: ui-patterns.natural-interaction.natural-interface
+    output_scope: input-and-spatial-interaction
+    applies_when:
+      - task_depends_on_touch_gesture_or_spatial_input
+      - physical_environment_changes_interaction_constraints
+      - alternative_input_is_required
+    required_inputs:
+      - device_and_platform
+      - physical_environment
+      - input_map
+      - interaction_targets
+      - feedback_policy
+      - alternative_input
+      - safety_policy
+      - accessibility_profile
+      - reference_artifact
+    required_blocks:
+      - input-surface: [input_channel, active_area, system_gesture_conflicts]
+      - interaction-target: [target_id, target_state, reachability, action]
+      - natural-action: [gesture_or_spatial_action, trigger, cancellation, alternative]
+      - interaction-feedback: [visual, audio_or_haptic, timing, failure_feedback]
+      - alternative-control: [control, equivalent_action, availability, focus_order]
+      - safety-and-recovery: [accidental_activation, blocked_action, recovery_action]
+    required_states: [initial, ready, active, feedback, invalid-input, blocked, permission-denied, recovered]
+    required_actions: [perform-input, confirm, cancel, switch-input, recover]
+    required_transitions: [ready-to-active, active-to-feedback, active-to-invalid-input, active-to-blocked, feedback-to-ready, blocked-to-recovered, permission-denied-to-alternative-input]
+    required_checks:
+      - natural_interaction_does_not_duplicate_mobile_touch_without_reason
+      - essential_action_has_visible_alternative
+      - system_gesture_conflicts_are_checked
+      - device_environment_and_safety_constraints_are_explicit
+      - feedback_identifies_action_result
+      - accessibility_and_alternative_input_are_testable
+
+  - template_id: workflow-process-ui
+    status: active
+    selection_status: selectable
+    pattern_id: ui-patterns.processes.workflow-process-interface
+    output_scope: process-visualization-and-action
+    applies_when:
+      - user_must_view_or_change_process_stages
+      - process_has_states_and_allowed_transitions
+      - overview_and_detail_must_coexist
+    required_inputs:
+      - process_model
+      - node_and_stage_types
+      - status_model
+      - transition_rules
+      - action_permissions
+      - filtering_and_search
+      - synchronization_policy
+      - scale_and_overflow_policy
+      - reference_artifact
+    required_blocks:
+      - process-canvas: [representation, stages_or_nodes, relationships, zoom_or_scroll]
+      - stage-or-column: [stage_id, ordering, entry_condition, exit_condition]
+      - process-item: [item_id, summary, status, owner_or_scope, detail_entry]
+      - transition-control: [transition_id, availability, confirmation, success, error]
+      - process-filters: [fields, trigger, reset_action, empty_result]
+      - item-detail: [identity, data, available_actions, back_transition]
+      - conflict-feedback: [conflict_type, current_version, recovery_action]
+    required_states: [loading, overview, filtered, item-selected, transition-pending, updated, read-only, conflict, error]
+    required_actions: [browse, search, filter, open-detail, transition, reorder-or-drag, retry, recover]
+    required_transitions: [loading-to-overview, overview-to-filtered, overview-to-item-selected, item-to-detail, item-to-transition-pending, transition-to-updated, transition-to-error, conflict-to-recover]
+    required_checks:
+      - process_model_and_state_transitions_are_explicit
+      - workflow_process_is_distinguished_from_multi_step_workflow
+      - each_transition_has_permission_and_recovery_rules
+      - overview_and_detail_preserve_item_identity
+      - synchronization_conflict_is_visible_and_recoverable
+      - large_process_structure_has_declared_overflow_behavior
+      - drag_or_reorder_has_an_accessible_alternative_when_used
+
+  - template_id: role-based-ui
+    status: candidate
+    selection_status: not_selectable
+    scope: cross-cutting
+    pattern_id: null
+    output_scope: roles-and-visibility
+    applies_when:
+      - screen_content_or_actions_depend_on_user_role
+      - permissions_change_visible_or_available_ui
+      - role_switching_or_delegation_is_supported
+    required_inputs:
+      - roles
+      - permission_source
+      - visibility_policy
+      - action_availability_policy
+      - denied_action_policy
+      - role_switch_policy
+      - audit_or_traceability_policy
+    required_blocks:
+      - role-context: [current_role, role_source, scope, change_indicator]
+      - permission-aware-block: [ui_id, required_permission, visibility, fallback]
+      - action-availability: [action_id, allowed_roles, denied_roles, disabled_reason]
+      - denied-feedback: [message, safe_detail_level, recovery_or_request_access]
+      - role-switch: [available_roles, confirmation, state_preservation, audit]
+    required_states: [authorized, partially-authorized, denied, role-switching, stale-permission]
+    required_actions: [view, execute, request-access, switch-role, refresh-permissions, recover]
+    required_transitions: [role-to-visible-ui, role-to-denied-ui, denied-to-request-access, role-switch-to-updated-ui, stale-permission-to-refresh]
+    required_checks:
+      - visibility_does_not_replace_server_side_authorization
+      - allowed_and_denied_actions_are_explicit
+      - denied_feedback_does_not_leak_sensitive_information
+      - role_switch_preserves_or_discards_state_explicitly
+      - permission_change_has_refresh_or_recovery_behavior
+      - role_decisions_are_traceable_to_requirements
+
+  - template_id: enterprise-ui-context
+    status: candidate
+    selection_status: not_selectable
+    scope: cross-cutting
+    pattern_id: null
+    output_scope: usage-data-performance-and-integration
+    applies_when:
+      - interface_is_used_in_operational_or_enterprise_context
+      - data_volume_or_update_frequency_affects_composition
+      - multiple_monitors_or_external_integrations_change_the_ui_contract
+    required_inputs:
+      - environment
+      - device_and_viewport
+      - usage_frequency
+      - task_criticality
+      - monitor_scope
+      - data_volume_class
+      - loading_strategy
+      - update_frequency
+      - integration_points
+      - component_system
+      - design_tokens
+      - reference_artifact
+    required_blocks:
+      - usage-context: [environment, device, frequency, criticality, user_preparation]
+      - monitor-layout: [monitor_scope, viewport_map, priority, restoration]
+      - data-scale: [volume_class, loading_strategy, pagination_or_virtualization, empty_and_error]
+      - integration-status: [integration_id, data_binding, availability, failure_recovery]
+      - component-foundation: [component_system, token_source, reuse_policy, deviation_policy]
+      - performance-feedback: [response_expectation, loading, progress, long_operation_recovery]
+    required_states: [initial, loading, partial-data, populated, stale, integration-error, degraded, restored]
+    required_actions: [load, refresh, paginate-or-virtualize, retry, inspect-integration, restore-layout]
+    required_transitions: [initial-to-loading, loading-to-partial-data, loading-to-populated, populated-to-stale, populated-to-integration-error, error-to-degraded, degraded-to-restored]
+    required_checks:
+      - usage_environment_and_task_criticality_are_recorded
+      - monitor_layout_preserves_primary_actions_and_context
+      - large_data_strategy_is_explicit_without_unjustified_thresholds
+      - integration_failure_has_visible_recovery
+      - component_and_token_sources_are_traceable
+      - loading_and_long_operation_feedback_are_distinguishable
+      - performance_claims_are_project_or_source_bound

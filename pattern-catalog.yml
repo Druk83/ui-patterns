@@ -18,9 +18,21 @@ selection_order:
   - ui_scope
   - screen_context
   - user_task
+  - user_context
+  - usage_environment
+  - screen_criticality
+  - interface_modality
+  - information_architecture_context
   - data_shape
+  - data_density
+  - data_volume_and_performance
+  - choice_complexity
   - interaction_model
+  - input_method_and_device_context
   - state_model
+  - response_time_expectation
+  - error_cost_and_recovery
+  - familiar_pattern_constraints
   - viewport_constraints
   - accessibility_constraints
   - pattern_conditions
@@ -31,15 +43,107 @@ required_context:
   - screen_id
   - screen_purpose
   - user_roles
+  - user_context
+  - usage_environment
+  - screen_criticality
+  - interface_modality
+  - information_architecture_context
   - route_or_entry_point
   - data_source_and_shape
+  - data_density
+  - task_frequency_and_urgency
   - user_actions
+  - choice_complexity
+  - input_method_and_device_context
   - states_and_transitions
+  - response_time_expectation
+  - error_cost_and_recovery
+  - familiar_pattern_constraints
+  - data_volume_and_performance
+  - integration_and_component_constraints
   - viewport_and_orientation
   - accessibility_constraints
   - requirement_and_scenario_refs
 
 context_status_values: [confirmed, requirement, assumption, gap]
+principle_applicability_values: [required, recommended, not_applicable, gap]
+
+information_architecture_context:
+  required:
+    - content_scope_and_types
+    - content_relationships_and_lifecycle
+    - findability_modes
+    - labels_and_user_vocabulary
+    - entry_points_and_navigation_scope
+    - content_growth_expectation
+  findability_modes:
+    - known_item
+    - exploration
+    - unknown_need
+    - repeat_search
+  organization_models:
+    - single_page
+    - flat
+    - index
+    - central_hub
+    - strict_hierarchy
+    - multi_dimensional_hierarchy
+  missing_behavior: record-as-gap
+
+usage_context:
+  required:
+    - environment
+    - device_and_viewport
+    - usage_frequency
+    - task_criticality
+    - user_preparation
+  environment_values:
+    - office
+    - field
+    - warehouse
+    - production
+    - remote_terminal
+    - multi_monitor
+    - unknown
+  missing_behavior: record-as-gap
+
+interface_modality:
+  required:
+    - input_channels
+    - output_channels
+    - primary_modality
+    - fallback_modality
+  channel_values:
+    - pointer
+    - keyboard
+    - touch
+    - gesture
+    - voice
+    - text_command
+    - conversational
+    - visual
+    - audio
+  missing_behavior: record-as-gap
+
+data_volume_and_performance:
+  required:
+    - data_volume_class
+    - loading_strategy
+    - update_frequency
+    - response_expectation
+    - long_operation_behavior
+  volume_values: [small, medium, large, unknown]
+  strategy_values: [eager, lazy, paginated, virtualized, server_side, unknown]
+  missing_behavior: record-as-gap
+
+integration_and_component_constraints:
+  required:
+    - data_integrations
+    - external_services
+    - component_system
+    - design_tokens
+    - compatibility_constraints
+  missing_behavior: record-as-gap
 
 family_paths:
   forms: формы
@@ -49,13 +153,85 @@ family_paths:
   navigation: навигация
   dialogs: диалоги
 
+cross_cutting_templates:
+  - multi-step-workflow-ui
+  - stateful-action-ui
+  - progressive-onboarding-ui
+  - responsive-ui
+  - information-architecture-ui
+
+candidate_cross_cutting_templates:
+  selection_status: not_selectable
+  entries:
+    - template_id: role-based-ui
+      title: Ролевой интерфейс
+      status: candidate
+    - template_id: enterprise-ui-context
+      title: Enterprise-контекст интерфейса
+      status: candidate
+
+extended_templates:
+  selection_status: selectable
+  note: Активные расширенные шаблоны выбираются только при выполнении их required_conditions и заполнении обязательных входов.
+  entries:
+    - pattern_id: ui-patterns.command-line.command-interface
+      title: Командный интерфейс
+      family_path: командная-строка/командный-интерфейс.md
+      pattern_type: CLI_COMMAND_UI
+      template_id: cli-command-ui
+      diagram_source: командная-строка/командный-интерфейс.plantuml
+      diagram_artifact: командная-строка/командный-интерфейс.png
+      status: active
+    - pattern_id: ui-patterns.conversational.conversational-interface
+      title: Разговорный интерфейс
+      family_path: разговорные-интерфейсы/разговорный-интерфейс.md
+      pattern_type: CUI_CONVERSATIONAL_UI
+      template_id: conversational-ui
+      diagram_source: разговорные-интерфейсы/разговорный-интерфейс.plantuml
+      diagram_artifact: разговорные-интерфейсы/разговорный-интерфейс.png
+      status: active
+    - pattern_id: ui-patterns.voice.voice-interface
+      title: Голосовой интерфейс
+      family_path: голосовые-интерфейсы/голосовой-интерфейс.md
+      pattern_type: VUI_VOICE_UI
+      template_id: voice-ui
+      diagram_source: голосовые-интерфейсы/голосовой-интерфейс.plantuml
+      diagram_artifact: голосовые-интерфейсы/голосовой-интерфейс.png
+      status: active
+    - pattern_id: ui-patterns.text.text-interface
+      title: Текстовый интерфейс с псевдографикой
+      family_path: текстовые-интерфейсы/текстовый-интерфейс.md
+      pattern_type: TUI_TEXT_UI
+      template_id: text-terminal-ui
+      diagram_source: текстовые-интерфейсы/текстовый-интерфейс.plantuml
+      diagram_artifact: текстовые-интерфейсы/текстовый-интерфейс.png
+      status: active
+    - pattern_id: ui-patterns.natural-interaction.natural-interface
+      title: Естественное взаимодействие
+      family_path: естественное-взаимодействие/естественный-интерфейс.md
+      pattern_type: NUI_NATURAL_INTERACTION_UI
+      template_id: natural-interaction-ui
+      diagram_source: естественное-взаимодействие/естественный-интерфейс.plantuml
+      diagram_artifact: естественное-взаимодействие/естественный-интерфейс.png
+      status: active
+    - pattern_id: ui-patterns.processes.workflow-process-interface
+      title: Интерфейс визуализации процесса
+      family_path: процессы/интерфейс-визуализации-процесса.md
+      pattern_type: WORKFLOW_PROCESS_UI
+      template_id: workflow-process-ui
+      diagram_source: процессы/интерфейс-визуализации-процесса.plantuml
+      diagram_artifact: процессы/интерфейс-визуализации-процесса.png
+      status: active
+
 decision_result:
   required:
     - selected_pattern
     - catalog_version
     - input_facts
     - rejected_candidates
-    - applied_template
+    - applied_templates
+    - principle_decisions
+    - ia_decisions
     - generated_ui_blocks
     - unresolved_gaps
   rejection_record:
@@ -86,6 +262,8 @@ entries:
     status: active
     card_path: формы/ввод-и-валидация-данных.md
     template_id: form-workflow-ui
+    diagram_source: формы/ввод-и-валидация-данных.plantuml
+    diagram_artifact: формы/ввод-и-валидация-данных.png
     intent: Собрать, проверить и отправить введённые пользователем данные.
     required_conditions:
       - пользователь вводит или изменяет структурированные данные
@@ -111,6 +289,8 @@ entries:
     status: active
     card_path: списки/табличное-отображение-данных.md
     template_id: list-detail-ui-data-table
+    diagram_source: списки/табличное-отображение-данных.plantuml
+    diagram_artifact: списки/табличное-отображение-данных.png
     intent: Показать коллекцию однотипных данных с операциями поиска, фильтрации, сортировки или постраничного просмотра.
     required_conditions:
       - данные имеют повторяющуюся строковую структуру
@@ -136,6 +316,8 @@ entries:
     status: active
     card_path: навигация/навигация-меню.md
     template_id: navigation-content-ui-menu
+    diagram_source: навигация/навигация-меню.plantuml
+    diagram_artifact: навигация/навигация-меню.png
     intent: Дать пользователю переходы между несколькими разделами или маршрутами с сохранением выбранного пункта.
     required_conditions:
       - существует несколько разделов или маршрутов
@@ -160,6 +342,8 @@ entries:
     status: active
     card_path: диалоги/модальный-диалог.md
     template_id: dialog-overlay-ui-modal
+    diagram_source: диалоги/модальный-диалог.plantuml
+    diagram_artifact: диалоги/модальный-диалог.png
     intent: Временно сфокусировать внимание на коротком контекстном взаимодействии поверх текущего экрана.
     required_conditions:
       - действие требует временного фокуса
@@ -185,6 +369,8 @@ entries:
     status: active
     card_path: панели-мониторинга/панель-мониторинга.md
     template_id: dashboard-monitoring-ui
+    diagram_source: панели-мониторинга/панель-мониторинга.plantuml
+    diagram_artifact: панели-мониторинга/панель-мониторинга.png
     intent: Обеспечить обзор ключевых показателей и интерактивное исследование связанных данных.
     required_conditions: [несколько связанных показателей или визуализаций, необходимость обзора или исследования данных]
     selection_signals: [KPI, визуальная иерархия, фильтрация, linked charts, drill-down]
@@ -200,6 +386,8 @@ entries:
     status: active
     card_path: мобильные/мобильный-сенсорный-интерфейс.md
     template_id: mobile-touch-ui
+    diagram_source: мобильные/мобильный-сенсорный-интерфейс.plantuml
+    diagram_artifact: мобильные/мобильный-сенсорный-интерфейс.png
     intent: Обеспечить выполнение пользовательской задачи на сенсорном устройстве через достижимые контролы, понятные переходы, стандартные жесты и доступные альтернативы основным действиям.
     required_conditions:
       - основной способ взаимодействия выполняется через touch

@@ -25,4 +25,5 @@ AGENTS.md
 .project-structure.json
 .agents/
 .catalog/
+pattern-catalog-check.py
 CHANGELOG.md

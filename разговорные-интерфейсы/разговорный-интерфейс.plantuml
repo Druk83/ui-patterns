@@ -1,0 +1,37 @@
+@startuml
+title Разговорный интерфейс: обработка сообщения
+
+skinparam shadowing false
+skinparam state {
+  BackgroundColor #E8F1FB
+  BorderColor #4169A1
+  ArrowColor #4169A1
+}
+
+[*] --> Initial
+state "Начало" as Initial #E8F1FB
+state "Ожидание ввода" as WaitingInput #E8F1FB
+state "Понимание сообщения" as Understanding #FFF4CC
+state "Уточнение" as Clarifying #FFF4CC
+state "Ответ" as Responding #FFF4CC
+state "Ожидание подтверждения" as AwaitingConfirmation #FFF4CC
+state "Выполнение" as Executing #FFF4CC
+state "Успешно" as Success #E2F0D9
+state "Ошибка" as ErrorState #FDE2E2
+state "Передано" as HandedOff #E8F1FB
+
+Initial --> WaitingInput : открыть диалог
+WaitingInput --> Understanding : отправить сообщение
+Understanding --> Clarifying : данных недостаточно
+Understanding --> Responding : намерение определено
+Responding --> AwaitingConfirmation : требуется подтверждение
+AwaitingConfirmation --> Executing : подтвердить
+AwaitingConfirmation --> WaitingInput : отменить
+Executing --> Success : завершено
+Executing --> ErrorState : ошибка
+ErrorState --> WaitingInput : повторить
+ErrorState --> HandedOff : передать в другой канал
+Clarifying --> Understanding : получить уточнение
+HandedOff --> WaitingInput : сохранить необходимый контекст
+Success --> WaitingInput : продолжить или сбросить
+@enduml
