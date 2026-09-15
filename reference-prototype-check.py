@@ -284,6 +284,7 @@ def capture(
                 str(browser),
                 "--headless=new",
                 "--disable-gpu",
+                "--in-process-gpu",
                 "--disable-extensions",
                 "--no-first-run",
                 "--no-default-browser-check",
