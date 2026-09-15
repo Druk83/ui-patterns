@@ -1,0 +1,8 @@
+<!doctype html>
+<html lang="ru">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Шаблон диалога</title><link rel="stylesheet" href="../эталонный-шаблон/styles.css"></head>
+<body><main class="screen" data-template-id="dialog-overlay-screen">
+  <header class="screen-header"><p class="eyebrow">ДИАЛОГ</p><h1>Подтверждение действия</h1><p class="muted">Overlay с фокусом, закрытием и восстановлением.</p></header>
+  <section class="layout"><article class="panel"><h2>Основной экран</h2><p>Здесь находится контекст действия.</p><button id="primary-action" type="button">Открыть диалог</button></article><aside class="panel" role="dialog" aria-labelledby="dialog-title"><h2 id="dialog-title">Подтвердить изменение?</h2><p>Тестовый текст без product data.</p><button type="button">Отмена</button></aside></section>
+  <p id="status" class="status" role="status">Диалог закрыт</p><p id="error" class="error" role="alert" hidden>Состояние ошибки и восстановления.</p>
+</main><script src="../эталонный-шаблон/script.js"></script></body></html>

@@ -1,0 +1,20 @@
+{
+  "version": "0.2.0",
+  "status": "reference-only",
+  "purpose": "Машиночитаемый план runtime и visual проверки live reference prototype.",
+  "viewport_source": "consumer-screen-pool",
+  "required_states": ["initial", "action-complete", "recovery-required"],
+  "required_checks": [
+    "preview-loads-without-project-api",
+    "entrypoint-loads-at-confirmed-viewport",
+    "primary-action-reaches-action-complete",
+    "escape-reaches-recovery-required",
+    "responsive-condition-is-declared",
+    "fixture-only-data-is-used"
+  ],
+  "artifacts": {
+    "screenshot_policy": "generated-during-check-and-not-published-as-product-data",
+    "reference_manifest": "манифест-эталонного-шаблона.json"
+  },
+  "source_url": "https://github.com/Druk83/ui-patterns.git"
+}

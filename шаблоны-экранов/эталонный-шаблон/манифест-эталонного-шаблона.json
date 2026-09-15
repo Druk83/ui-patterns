@@ -1,0 +1,15 @@
+{
+  "template_id": "generic-reference-template",
+  "version": "0.2.0",
+  "status": "reference-only",
+  "runtime": "framework-neutral-html-css-js",
+  "viewport_profiles": ["portrait", "landscape", "compact", "narrow", "wide", "overflow/stress case"],
+  "states": ["initial", "action-complete", "recovery-required"],
+  "actions": ["primary-action", "escape-recovery"],
+  "transitions": ["initial-to-action-complete", "initial-to-recovery-required"],
+  "data_policy": "fixture-only",
+  "responsive_contract": "Conditions are declared by the confirmed consumer screen pool; the reference CSS stacks layout below 720 CSS px.",
+  "accessibility_hooks": ["focus-visible", "keyboard-recovery", "status-announcement", "error-announcement"],
+  "visual_baseline": "визуальный-базис.json",
+  "source_url": "https://github.com/Druk83/ui-patterns.git"
+}

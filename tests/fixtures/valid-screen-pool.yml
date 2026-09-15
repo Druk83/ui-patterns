@@ -1,0 +1,55 @@
+schema_version: 1
+kind: screen-pool
+pool_id: fixture-screen-pool
+version: 0.1.0
+template_set_version: 0.2.0
+status: confirmed
+source_refs:
+  - fixture:screen-pool
+confirmed_by: fixture-decision
+confirmed_at: "2026-09-15"
+decision_ref: fixture:screen-pool-confirmation
+screens:
+  - screen_id: fixture-form-screen
+    title: Fixture form screen
+    screen_type: form workflow
+    purpose: Проверка контракта формы без данных проекта.
+    route_or_entry_point: /fixture/form
+    roles: [fixture-user]
+    user_task: Выполнить проверочное действие с тестовыми данными.
+    pattern_candidates:
+      - pattern_id: ui-patterns.forms.form-data-entry-validation
+        rationale: Тестовая связь с активным паттерном формы.
+        status: confirmed
+    template_candidates:
+      - template_id: form-workflow-screen
+        rationale: Тестовая связь с шаблоном формы.
+        status: confirmed
+    states: [initial, action-complete, recovery-required]
+    actions: [primary-action, escape-recovery]
+    transitions:
+      - source: initial
+        event: primary-action
+        condition: Пользователь активировал основное действие.
+        target: action-complete
+      - source: initial
+        event: escape-recovery
+        condition: Пользователь запросил восстановление.
+        target: recovery-required
+    viewport_candidates:
+      - viewport_id: fixture-portrait
+        width: 360
+        height: 640
+        unit: css-px
+        orientation: portrait
+        responsive_profile: narrow
+        breakpoint_conditions: При ширине менее 720 CSS px колонки объединяются в один столбец.
+        purpose: reference
+        source: fixture:viewport-requirement
+        rationale: Тестовая проверка передачи размера из требования проекта.
+        status: confirmed
+    reference_artifacts: []
+    rationale: Тестовый экран не представляет конкретный продукт.
+    source_refs:
+      - fixture:screen-pool
+    status: confirmed

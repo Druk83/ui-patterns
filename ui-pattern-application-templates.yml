@@ -79,6 +79,8 @@ information_architecture_profiles:
 
 templates:
   - template_id: form-workflow-ui
+    status: active
+    selection_status: selectable
     pattern_id: ui-patterns.forms.form-data-entry-validation
     output_scope: screen-block
     principle_profiles: [common-ui, input-and-recovery]
@@ -133,6 +135,8 @@ templates:
       - narrow-viewport-field-layout
 
   - template_id: list-detail-ui-data-table
+    status: active
+    selection_status: selectable
     pattern_id: ui-patterns.lists.data-table
     output_scope: screen-block
     principle_profiles: [common-ui, input-and-recovery]
@@ -191,6 +195,8 @@ templates:
       - narrow-viewport-overflow
 
   - template_id: navigation-content-ui-menu
+    status: active
+    selection_status: selectable
     pattern_id: ui-patterns.navigation.menu-navigation
     output_scope: screen-region
     principle_profiles: [common-ui]
@@ -239,6 +245,8 @@ templates:
       - deep-link-and-back-navigation
 
   - template_id: dialog-overlay-ui-modal
+    status: active
+    selection_status: selectable
     pattern_id: ui-patterns.dialogs.modal-dialog
     output_scope: overlay-block
     principle_profiles: [common-ui, input-and-recovery]
@@ -294,6 +302,8 @@ templates:
       - narrow-viewport-dialog-behavior
 
   - template_id: dashboard-monitoring-ui
+    status: active
+    selection_status: selectable
     pattern_id: ui-patterns.dashboards.dashboard-monitoring
     output_scope: screen-block
     principle_profiles: [common-ui, input-and-recovery]
@@ -311,6 +321,8 @@ templates:
     required_checks: [dashboard-purpose-and-mode, metric-priority-and-limit, visual-hierarchy, consistent-color-assignment, whitespace-and-layout, linked-chart-update, annotation-meaning, loading-empty-error-states, accessibility-alternative, narrow-viewport-behavior]
 
   - template_id: mobile-touch-ui
+    status: active
+    selection_status: selectable
     pattern_id: ui-patterns.mobile.mobile-touch-interface
     output_scope: screen-and-interaction
     principle_profiles: [common-ui, input-and-recovery, responsive-and-mobile]

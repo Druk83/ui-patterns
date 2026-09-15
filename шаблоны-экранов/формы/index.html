@@ -1,0 +1,8 @@
+<!doctype html>
+<html lang="ru">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Шаблон формы</title><link rel="stylesheet" href="../эталонный-шаблон/styles.css"></head>
+<body><main class="screen" data-template-id="form-workflow-screen">
+  <header class="screen-header"><p class="eyebrow">ФОРМА</p><h1>Ввод и проверка данных</h1><p class="muted">Шаблон последовательного заполнения формы.</p></header>
+  <section class="layout" data-slot="content"><article class="panel"><h2>Данные пользователя</h2><label>Имя<input placeholder="Тестовое значение"></label><label>Описание<textarea placeholder="Тестовые данные-заглушки"></textarea></label><button id="primary-action" type="button">Проверить и сохранить</button></article><aside class="panel"><h2>Правила</h2><p>Обязательные поля, ошибки и восстановление.</p></aside></section>
+  <p id="status" class="status" role="status">Начальное состояние</p><p id="error" class="error" role="alert" hidden>Состояние ошибки и восстановления.</p>
+</main><script src="../эталонный-шаблон/script.js"></script></body></html>

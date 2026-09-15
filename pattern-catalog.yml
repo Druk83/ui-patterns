@@ -1,6 +1,6 @@
 schema_version: 1
 catalog_id: ui-patterns
-catalog_version: 0.1.0
+catalog_version: 0.2.0
 domain: ui
 visibility: public
 
@@ -13,6 +13,8 @@ start_here:
   output_schema: ui-specification-schema.yml
   screen_template: ui-screen-specification-template.md
   application_templates: ui-pattern-application-templates.yml
+  screen_pool_schema: шаблоны-экранов/контракт-пула-экранов.yml
+  screen_ui_templates: шаблоны-экранов/manifest.json
 
 selection_order:
   - ui_scope

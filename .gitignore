@@ -14,16 +14,18 @@
 .issues/done
 */__pycache__/
 .issues/
-.tools/
 .approach/
-.chatlog/
-.manifest/
-.requirements/
 .source/
-.tasks/
-AGENTS.md
 .project-structure.json
 .agents/
-.catalog/
 pattern-catalog-check.py
 CHANGELOG.md
+.tasks/
+AGENTS.md
+.catalog/
+
+# SDD Framework: managed ignore entries
+tmp/
+.tasks/done/
+.issues/done/
+.agents/sdd-template-*/

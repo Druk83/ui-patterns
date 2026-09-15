@@ -6,10 +6,12 @@ Route: `{{screen.route}}`
 Template set: `ui-patterns`
 
 Template set version: `{{package.template_set_version}}`
+Screen pool: `{{screen.screen_pool_ref.pool_id}}` version `{{screen.screen_pool_ref.version}}`
 
 Pattern: `{{pattern.pattern_id}}` version `{{pattern.version}}`
 Interface type: `{{screen.interface_type}}`
 Applied templates: `{{screen.applied_templates}}`
+Screen UI template: `{{screen.template_id}}` revision `{{screen.template_revision}}`
 Principle profiles: `{{screen.principle_profiles}}`
 Information architecture profile: `{{screen.information_architecture_profiles}}`
 

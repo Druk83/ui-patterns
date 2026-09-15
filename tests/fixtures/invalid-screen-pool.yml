@@ -1,0 +1,45 @@
+schema_version: 1
+kind: screen-pool
+pool_id: invalid-screen-pool
+version: 0.1.0
+template_set_version: 0.2.0
+status: confirmed
+source_refs: [fixture:invalid-pool]
+confirmed_by: fixture-decision
+confirmed_at: "2026-09-15"
+decision_ref: fixture:invalid-pool
+screens:
+  - screen_id: invalid-screen
+    title: Invalid screen
+    screen_type: form workflow
+    purpose: Негативный тест.
+    route_or_entry_point: /invalid
+    roles: [fixture-user]
+    user_task: Негативный тест.
+    pattern_candidates:
+      - pattern_id: missing-pattern
+        rationale: Негативный тест.
+        status: confirmed
+    template_candidates:
+      - template_id: form-workflow-screen
+        rationale: Негативный тест.
+        status: confirmed
+    states: [initial]
+    actions: [primary-action]
+    transitions: []
+    viewport_candidates:
+      - viewport_id: invalid-viewport
+        width: 360
+        height: 640
+        unit: css-px
+        orientation: portrait
+        responsive_profile: narrow
+        breakpoint_conditions: ""
+        purpose: reference
+        source: ""
+        rationale: ""
+        status: confirmed
+    reference_artifacts: []
+    rationale: Негативный тест.
+    source_refs: [fixture:invalid-pool]
+    status: confirmed

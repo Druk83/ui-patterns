@@ -11,6 +11,7 @@ package:
     - template_set_version
     - status
     - source_refs
+    - screen_pool
     - screen_manifest
     - pattern_refs
     - principle_decisions
@@ -22,9 +23,20 @@ package:
     - approved
     - superseded
 
+screen_pool:
+  required:
+    - pool_id
+    - version
+    - status
+    - confirmation_ref
+  status_values:
+    - confirmed
+    - superseded
+
 screen_manifest:
   required:
     - screen_id
+    - screen_pool_ref
     - title
     - route
     - purpose
@@ -41,6 +53,8 @@ screen_manifest:
     - blocks
     - reference_artifacts
     - applied_templates
+    - template_id
+    - template_revision
     - principle_profiles
     - principle_decisions
     - information_architecture_profiles

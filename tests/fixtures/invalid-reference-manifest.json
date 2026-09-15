@@ -1,0 +1,8 @@
+{
+  "template_id": "generic-reference-template",
+  "version": "0.2.0",
+  "status": "reference-only",
+  "runtime": "framework-neutral-html-css-js",
+  "data_policy": "product-data",
+  "source_url": "https://github.com/Druk83/ui-patterns.git"
+}

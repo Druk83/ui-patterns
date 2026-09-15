@@ -1,0 +1,87 @@
+schema_version: 1
+
+kind: screen-pool
+ownership: project-repository
+purpose: Машиночитаемый контракт пула экранов, который проект-потребитель формирует до детализации экранных спецификаций.
+
+pool:
+  required:
+    - pool_id
+    - version
+    - template_set_version
+    - status
+    - source_refs
+    - screens
+  status_values: [proposed, confirmed, superseded]
+  confirmation_required_when_confirmed:
+    - confirmed_by
+    - confirmed_at
+    - decision_ref
+
+screen:
+  required:
+    - screen_id
+    - title
+    - screen_type
+    - purpose
+    - route_or_entry_point
+    - roles
+    - user_task
+    - pattern_candidates
+    - template_candidates
+    - states
+    - actions
+    - transitions
+    - viewport_candidates
+    - reference_artifacts
+    - rationale
+    - source_refs
+    - status
+  status_values: [proposed, confirmed, rejected, gap]
+
+pattern_candidate:
+  required:
+    - pattern_id
+    - rationale
+    - status
+  status_values: [proposed, confirmed, rejected, gap]
+
+template_candidate:
+  required:
+    - template_id
+    - rationale
+    - status
+  status_values: [proposed, confirmed, rejected, gap]
+
+viewport_candidate:
+  required:
+    - viewport_id
+    - width
+    - height
+    - unit
+    - orientation
+    - responsive_profile
+    - breakpoint_conditions
+    - purpose
+    - source
+    - rationale
+    - status
+  unit_values: [css-px]
+  orientation_values: [portrait, landscape, any]
+  purpose_values: [reference, supported, minimum, maximum, stress]
+  status_values: [proposed, confirmed, rejected, gap]
+
+reference_artifact:
+  required:
+    - artifact_id
+    - type
+    - path_or_url
+    - status
+  status_values: [proposed, confirmed, rejected, gap]
+
+rules:
+  - Размеры viewport указываются в CSS px и получают source и rationale.
+  - Название устройства без размера, источника и обоснования не является допустимым viewport-кандидатом.
+  - Пул со статусом confirmed должен содержать только подтверждённые экраны и хотя бы один подтверждённый viewport для каждого экрана.
+  - Пустые сведения о продукте фиксируются как gap, а не заменяются универсальным экраном.
+  - Конкретный screen UI template выбирается после подтверждения пула.

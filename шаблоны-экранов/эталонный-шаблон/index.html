@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Переиспользуемый шаблон экранного UI</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="screen" data-template-id="{{template_id}}" tabindex="0">
+    <header class="screen-header">
+      <p class="eyebrow" data-slot="screen-type">ТИП ЭКРАНА</p>
+      <h1 data-slot="screen-title">Заголовок экрана</h1>
+      <p class="muted" data-slot="screen-purpose">Назначение и контекст использования</p>
+    </header>
+    <section class="layout" data-slot="content">
+      <article class="panel"><h2>Основное содержимое</h2><p>Заполнитель fixture-данных.</p><button id="primary-action" type="button">Основное действие</button></article>
+      <aside class="panel" data-slot="secondary-content"><h2>Дополнительное содержимое</h2><p>Необязательный слот компонента.</p></aside>
+    </section>
+    <p id="status" class="status" role="status">Начальное состояние</p>
+    <p id="error" class="error" role="alert" hidden>Состояние ошибки и восстановления.</p>
+  </main>
+  <script src="script.js"></script>
+</body>
+</html>
