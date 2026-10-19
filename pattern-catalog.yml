@@ -1,6 +1,6 @@
 schema_version: 1
 catalog_id: ui-patterns
-catalog_version: 0.3.0
+catalog_version: 0.3.1
 domain: ui
 visibility: public
 
@@ -15,6 +15,7 @@ start_here:
   application_templates: ui-pattern-application-templates.yml
   screen_pool_schema: шаблоны-экранов/контракт-пула-экранов.yml
   screen_ui_templates: шаблоны-экранов/manifest.json
+  screen_shell_contract: screen-shell-integration-contract.md
 
 selection_order:
   - ui_scope
@@ -36,6 +37,7 @@ selection_order:
   - error_cost_and_recovery
   - familiar_pattern_constraints
   - viewport_constraints
+  - screen_shell_resolution
   - accessibility_constraints
   - pattern_conditions
   - pattern_contraindications

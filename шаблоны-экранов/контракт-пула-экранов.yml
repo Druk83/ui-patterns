@@ -66,10 +66,28 @@ viewport_candidate:
     - source
     - rationale
     - status
+    - screen_shell_candidates
   unit_values: [css-px]
   orientation_values: [portrait, landscape, any]
   purpose_values: [reference, supported, minimum, maximum, stress]
   status_values: [proposed, confirmed, rejected, gap]
+
+  screen_shell_candidates:
+    type: non-empty-list
+    item_required: [status]
+    status_values: [selected, proposed, rejected, gap, not_applicable]
+    selected_requires: [catalog_url, catalog_revision, shell_id, shell_viewport, rationale]
+    proposed_requires: [catalog_url, catalog_revision, shell_id, shell_viewport, rationale]
+    rejected_requires: [catalog_url, catalog_revision, shell_id, shell_viewport, rationale]
+    gap_requires: [reason, decision_needed]
+    not_applicable_requires: [rationale]
+    shell_viewport_required: [width, height, unit, orientation]
+    selected_count: at-most-one
+    rules:
+      - shell_viewport должен точно совпадать с шириной, высотой, единицей измерения и ориентацией родительского viewport.
+      - Выбранная или предложенная оболочка должна разрешаться в неизменяемой ревизии каталога, указанной в catalog_url и catalog_revision.
+      - Для нескольких вариантов перечисляются отдельные элементы со статусом proposed; selected может быть не более одного.
+      - not_applicable используется только для невизуального артефакта; визуальная часть VUI/NUI также требует оболочку.
 
 reference_artifact:
   required:
@@ -84,4 +102,7 @@ rules:
   - Название устройства без размера, источника и обоснования не является допустимым viewport-кандидатом.
   - Пул со статусом confirmed должен содержать только подтверждённые экраны и хотя бы один подтверждённый viewport для каждого экрана.
   - Пустые сведения о продукте фиксируются как gap, а не заменяются универсальным экраном.
-  - Конкретный screen UI template выбирается после подтверждения пула.
+  - Финальный шаблон экрана подтверждается вместе с пулом; черновую композицию разрешено подготавливать раньше по запросу разработчика.
+  - Screen UI template задаёт композицию содержимого; точная оболочка viewport выбирается отдельно из каталога проекта-потребителя.
+  - Для визуального экрана без точной оболочки в screen_shell_candidates указывается элемент со статусом gap; приблизительная responsive-страница не считается заменой.
+  - UI-проектирование можно начать до подтверждения пула; такие экраны и оболочки остаются proposed до решения разработчика.

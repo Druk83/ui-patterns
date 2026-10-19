@@ -1,6 +1,6 @@
 {
   "template_id": "generic-reference-template",
-  "version": "0.2.0",
+  "version": "0.3.1",
   "status": "reference-only",
   "runtime": "framework-neutral-html-css-js",
   "data_policy": "product-data",

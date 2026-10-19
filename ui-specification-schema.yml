@@ -147,6 +147,39 @@ reference_artifact:
     - role
     - state
     - version
+  shell_binding: optional for existing artifacts; required for new visual artifacts
+  shell_binding_contract:
+    required:
+      - status
+    status_values:
+      - selected
+      - proposed
+      - gap
+      - not_applicable
+    selected_requires:
+      - catalog_url
+      - catalog_revision
+      - shell_id
+      - viewport_id
+      - shell_viewport
+    proposed_requires:
+      - catalog_url
+      - catalog_revision
+      - shell_id
+      - viewport_id
+      - shell_viewport
+      - rationale
+    gap_requires:
+      - viewport_id
+      - reason
+      - decision_needed
+    not_applicable_requires:
+      - rationale
+    rules:
+      - Привязка selected должна разрешаться в точный viewport и ориентацию этого артефакта.
+      - catalog_url и catalog_revision однозначно задают неизменяемый снимок каталога оболочек.
+      - Локальный путь checkout не заменяет catalog_url или catalog_revision.
+    shell_viewport_required: [width, height, unit, orientation]
 
 traceability:
   required:

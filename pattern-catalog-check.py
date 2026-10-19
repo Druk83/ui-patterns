@@ -76,6 +76,12 @@ def check_screen_templates(
         add_error(errors, "screen UI template manifest must use schema_version 1")
     if manifest.get("template_set_version") != expected_version:
         add_error(errors, f"screen UI template set must be version {expected_version}")
+    if manifest.get("template_role") != "content-composition":
+        add_error(errors, "screen UI template set must declare template_role content-composition")
+    if manifest.get("includes_viewport_shells") is not False:
+        add_error(errors, "screen UI template set must not claim to include viewport shells")
+    if manifest.get("viewport_contract_scope") != "responsive-content-behavior-only":
+        add_error(errors, "screen UI viewport contract must be scoped to responsive content behavior")
     if manifest.get("runtime") != "framework-neutral-html-css-js":
         add_error(errors, "screen UI templates must use the canonical runtime")
     if manifest.get("source_url") != "https://github.com/Druk83/ui-patterns.git":
@@ -85,6 +91,18 @@ def check_screen_templates(
         add_error(errors, "screen UI template manifest has no screen_pool_schema")
     elif not (root / "шаблоны-экранов" / pool_schema).is_file():
         add_error(errors, f"screen pool schema not found: {pool_schema}")
+    shell_contract = manifest.get("screen_shell_integration_contract")
+    if not isinstance(shell_contract, str) or not shell_contract:
+        add_error(errors, "screen UI template manifest has no screen_shell_integration_contract")
+    else:
+        shell_contract_path = (manifest_path.parent / shell_contract).resolve()
+        try:
+            shell_contract_path.relative_to(root.resolve())
+        except ValueError:
+            add_error(errors, "screen shell integration contract escapes the repository")
+        else:
+            if not shell_contract_path.is_file():
+                add_error(errors, f"screen shell integration contract not found: {shell_contract}")
     templates = manifest.get("templates")
     if not isinstance(templates, list) or not templates:
         add_error(errors, "screen UI template manifest has no templates")
@@ -179,6 +197,10 @@ def check_screen_templates(
             add_error(errors, "screen UI reference manifest must be reference-only")
         if reference_data.get("data_policy") != "fixture-only":
             add_error(errors, "screen UI reference manifest must use fixture-only data")
+        if reference_data.get("artifact_scope") != "content-composition-only":
+            add_error(errors, "screen UI reference manifest must declare content-composition-only scope")
+        if reference_data.get("includes_viewport_shell") is not False:
+            add_error(errors, "screen UI reference manifest must not claim to include a viewport shell")
         if reference_data.get("version") != expected_version:
             add_error(errors, f"screen UI reference manifest must be version {expected_version}")
         if reference_data.get("source_url") != "https://github.com/Druk83/ui-patterns.git":
@@ -198,6 +220,11 @@ def check_screen_templates(
             else:
                 if not isinstance(baseline_data, dict) or baseline_data.get("version") != expected_version:
                     add_error(errors, f"screen UI visual baseline must be version {expected_version}")
+                if isinstance(baseline_data, dict):
+                    if baseline_data.get("artifact_scope") != "content-composition-only":
+                        add_error(errors, "screen UI visual baseline must declare content-composition-only scope")
+                    if baseline_data.get("includes_viewport_shell") is not False:
+                        add_error(errors, "screen UI visual baseline must not claim to include a viewport shell")
 
 
 def _screen_template_index(root: Path) -> dict[str, dict[str, Any]]:
@@ -216,7 +243,12 @@ def _require_string_list(value: Any, location: str, field: str, errors: list[str
         add_error(errors, f"{location}: {field} must be a non-empty string list")
 
 
-def _check_viewport_candidate(value: Any, location: str, errors: list[str]) -> bool:
+def _check_viewport_candidate(
+    value: Any,
+    location: str,
+    errors: list[str],
+    require_shell_candidates: bool = False,
+) -> bool:
     if not isinstance(value, dict):
         add_error(errors, f"{location}: viewport candidate must be an object")
         return False
@@ -250,6 +282,56 @@ def _check_viewport_candidate(value: Any, location: str, errors: list[str]) -> b
         add_error(errors, f"{location}: invalid purpose")
     if value.get("status") not in {"proposed", "confirmed", "rejected", "gap"}:
         add_error(errors, f"{location}: invalid status")
+    shell_candidates = value.get("screen_shell_candidates")
+    if shell_candidates is None:
+        if require_shell_candidates:
+            add_error(errors, f"{location}: screen_shell_candidates is required for this catalog version")
+        return True
+    if not isinstance(shell_candidates, list) or not shell_candidates:
+        add_error(errors, f"{location}: screen_shell_candidates must be a non-empty list")
+        return True
+
+    selected_shell_count = 0
+    for index, raw_candidate in enumerate(shell_candidates):
+        candidate_location = f"{location}.screen_shell_candidates[{index}]"
+        if not isinstance(raw_candidate, dict):
+            add_error(errors, f"{candidate_location}: shell candidate must be an object")
+            continue
+        shell_status = raw_candidate.get("status")
+        if shell_status not in {"selected", "proposed", "rejected", "gap", "not_applicable"}:
+            add_error(errors, f"{candidate_location}: invalid status")
+            continue
+        if shell_status == "gap":
+            for field in ("reason", "decision_needed"):
+                if not isinstance(raw_candidate.get(field), str) or not raw_candidate[field].strip():
+                    add_error(errors, f"{candidate_location}: gap requires {field}")
+            continue
+        if shell_status == "not_applicable":
+            if not isinstance(raw_candidate.get("rationale"), str) or not raw_candidate["rationale"].strip():
+                add_error(errors, f"{candidate_location}: not_applicable requires rationale")
+            continue
+
+        for field in ("catalog_url", "catalog_revision", "shell_id", "rationale"):
+            if not isinstance(raw_candidate.get(field), str) or not raw_candidate[field].strip():
+                add_error(errors, f"{candidate_location}: {shell_status} requires {field}")
+        catalog_url = raw_candidate.get("catalog_url")
+        if isinstance(catalog_url, str) and not catalog_url.startswith("https://"):
+            add_error(errors, f"{candidate_location}: catalog_url must be an official HTTPS URL")
+        shell_viewport = raw_candidate.get("shell_viewport")
+        if not isinstance(shell_viewport, dict):
+            add_error(errors, f"{candidate_location}: {shell_status} requires shell_viewport metadata")
+        else:
+            for field in ("width", "height", "unit", "orientation"):
+                if field not in shell_viewport:
+                    add_error(errors, f"{candidate_location}: shell_viewport missing {field}")
+                elif shell_viewport[field] != value.get(field):
+                    add_error(errors, f"{candidate_location}: shell_viewport {field} does not match viewport candidate")
+        if shell_status == "selected":
+            selected_shell_count += 1
+            if value.get("status") != "confirmed":
+                add_error(errors, f"{candidate_location}: selected shell requires a confirmed viewport candidate")
+    if selected_shell_count > 1:
+        add_error(errors, f"{location}: only one screen shell candidate may be selected")
     return True
 
 
@@ -400,7 +482,12 @@ def check_screen_pool(
             viewport_ids: set[str] = set()
             for viewport_index, viewport in enumerate(viewports):
                 viewport_location = f"{location}.viewport_candidates[{viewport_index}]"
-                valid = _check_viewport_candidate(viewport, viewport_location, errors)
+                valid = _check_viewport_candidate(
+                    viewport,
+                    viewport_location,
+                    errors,
+                    require_shell_candidates=pool.get("template_set_version") == expected_version,
+                )
                 if valid and isinstance(viewport, dict):
                     viewport_id = viewport.get("viewport_id")
                     if viewport_id in viewport_ids:
@@ -446,6 +533,7 @@ def check_project_structure(root: Path, errors: list[str]) -> None:
         "ui_screen_template",
         "screen_pool_schema",
         "screen_ui_templates",
+        "screen_shell_integration_contract",
         "pattern_application_templates",
         "public_selection_procedure",
         "public_index",

@@ -59,11 +59,17 @@ Information architecture profile: `{{screen.information_architecture_profiles}}`
 - Responsive profile: {{screen.responsive_profile}}
 - Overflow rule: {{screen.overflow_rule}}
 
-## Reference artifacts
+## Визуальные артефакты (reference artifacts)
 
-| Artifact | Type | Status | Viewport | Role | State | Version |
-|---|---|---|---|---|---|---|
-| {{reference.artifact_id}} | {{reference.type}} | {{reference.status}} | {{reference.viewport}} | {{reference.role}} | {{reference.state}} | {{reference.version}} |
+Для каждого выбранного сочетания «экран × viewport × ориентация» указывается
+отдельный артефакт. Его привязка `shell_binding` содержит статус и, если выбрано,
+ссылку на каталог оболочек, неизменяемую ревизию и `shell_id`. Точные размеры и
+ориентация должны совпадать с оболочкой. Состав полей определён в
+`ui-specification-schema.yml`.
+
+| Артефакт | Тип / статус | viewport ID | Размеры / ориентация | Оболочка / статус | Каталог и ревизия | Роль / состояние | Версия |
+|---|---|---|---|---|---|---|---|
+| {{reference.artifact_id}} | {{reference.type}} / {{reference.status}} | {{reference.shell_binding.viewport_id}} | {{reference.viewport}} / {{reference.orientation}} | {{reference.shell_binding.shell_id}} / {{reference.shell_binding.status}} | {{reference.shell_binding.catalog_url}} @ {{reference.shell_binding.catalog_revision}} | {{reference.role}} / {{reference.state}} | {{reference.version}} |
 
 ## Information architecture decisions
 

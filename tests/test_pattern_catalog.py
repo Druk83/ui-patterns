@@ -37,11 +37,16 @@ def load_reference_checker() -> Any:
 def load_contracts(checker: Any) -> tuple[set[str], dict[str, dict[str, Any]]]:
     catalog = checker.load_yaml(ROOT / "pattern-catalog.yml")
     applications = checker.load_yaml(ROOT / "ui-pattern-application-templates.yml")
+    pattern_records = [
+        item for item in catalog.get("entries", []) if isinstance(item, dict)
+    ]
+    extended = catalog.get("extended_templates", {})
+    if isinstance(extended, dict) and isinstance(extended.get("entries"), list):
+        pattern_records.extend(item for item in extended["entries"] if isinstance(item, dict))
     active_pattern_ids = {
         str(item.get("pattern_id") or item.get("id"))
-        for item in catalog.get("entries", [])
-        if isinstance(item, dict)
-        and item.get("status") == "active"
+        for item in pattern_records
+        if item.get("status") == "active"
         and (item.get("pattern_id") or item.get("id"))
     }
     templates = {
@@ -85,7 +90,7 @@ class PatternCatalogValidatorTests(unittest.TestCase):
                 temporary_root,
                 active_pattern_ids,
                 application_templates,
-                "0.3.0",
+                "0.3.1",
                 errors,
             )
             self.assertTrue(any("active pattern not found" in error for error in errors))
@@ -112,7 +117,7 @@ class PatternCatalogValidatorTests(unittest.TestCase):
                 temporary_root,
                 active_pattern_ids,
                 application_templates,
-                "0.3.0",
+                "0.3.1",
                 errors,
             )
             self.assertIn("screen UI reference manifest must use fixture-only data", errors)
@@ -125,7 +130,7 @@ class PatternCatalogValidatorTests(unittest.TestCase):
             ROOT,
             ROOT / "tests" / "fixtures" / "valid-screen-pool.yml",
             active_pattern_ids,
-            "0.3.0",
+            "0.3.1",
             errors,
             require_confirmed=True,
         )
@@ -139,12 +144,13 @@ class PatternCatalogValidatorTests(unittest.TestCase):
             ROOT,
             ROOT / "tests" / "fixtures" / "invalid-screen-pool.yml",
             active_pattern_ids,
-            "0.3.0",
+            "0.3.1",
             errors,
             require_confirmed=True,
         )
         self.assertTrue(any("active pattern not found" in error for error in errors))
         self.assertTrue(any("missing source" in error for error in errors))
+        self.assertTrue(any("screen_shell_candidates is required" in error for error in errors))
 
     def test_reference_prototype_static_contract_passes(self) -> None:
         checker = load_reference_checker()
@@ -176,6 +182,89 @@ class PatternCatalogValidatorTests(unittest.TestCase):
         self.assertEqual(template["pattern_id"], "ui-patterns.lists.card-feed")
         self.assertEqual(template["template_path"], "карточная-лента")
         self.assertEqual(application_templates["list-detail-ui-card-feed"]["selection_status"], "selectable")
+
+    def test_screen_templates_are_content_compositions_not_viewport_shells(self) -> None:
+        checker = load_checker()
+        active_pattern_ids, application_templates = load_contracts(checker)
+        errors: list[str] = []
+        checker.check_screen_templates(
+            ROOT,
+            active_pattern_ids,
+            application_templates,
+            "0.3.1",
+            errors,
+        )
+        self.assertEqual(errors, [])
+
+        manifest = json.loads((ROOT / "шаблоны-экранов" / "manifest.json").read_text(encoding="utf-8"))
+        self.assertEqual(manifest["template_role"], "content-composition")
+        self.assertFalse(manifest["includes_viewport_shells"])
+        self.assertEqual(manifest["viewport_contract_scope"], "responsive-content-behavior-only")
+        self.assertTrue((ROOT / "screen-shell-integration-contract.md").is_file())
+
+    def test_screen_shell_gap_requires_reason_and_decision(self) -> None:
+        checker = load_checker()
+        viewport = {
+            "viewport_id": "fixture-viewport",
+            "width": 360,
+            "height": 640,
+            "unit": "css-px",
+            "orientation": "portrait",
+            "responsive_profile": "narrow",
+            "breakpoint_conditions": "fixture condition",
+            "purpose": "reference",
+            "source": "fixture:viewport",
+            "rationale": "Fixture validation only.",
+            "status": "proposed",
+            "screen_shell_candidates": [
+                {
+                    "status": "gap",
+                    "reason": "No shell catalog is supplied in this fixture.",
+                    "decision_needed": "Provide a matching shell catalog or approve another action.",
+                }
+            ],
+        }
+        errors: list[str] = []
+        checker._check_viewport_candidate(viewport, "fixture.viewport", errors)
+        self.assertEqual(errors, [])
+
+        del viewport["screen_shell_candidates"][0]["decision_needed"]
+        checker._check_viewport_candidate(viewport, "fixture.viewport", errors)
+        self.assertTrue(any("gap requires decision_needed" in error for error in errors))
+
+    def test_rejects_shell_viewport_mismatch(self) -> None:
+        checker = load_checker()
+        viewport = {
+            "viewport_id": "fixture-viewport",
+            "width": 360,
+            "height": 640,
+            "unit": "css-px",
+            "orientation": "portrait",
+            "responsive_profile": "narrow",
+            "breakpoint_conditions": "fixture condition",
+            "purpose": "reference",
+            "source": "fixture:viewport",
+            "rationale": "Fixture validation only.",
+            "status": "confirmed",
+            "screen_shell_candidates": [
+                {
+                    "status": "selected",
+                    "catalog_url": "https://github.com/Druk83/sdd-template.git",
+                    "catalog_revision": "fixture-revision",
+                    "shell_id": "fixture-shell",
+                    "rationale": "Fixture validation only.",
+                    "shell_viewport": {
+                        "width": 412,
+                        "height": 640,
+                        "unit": "css-px",
+                        "orientation": "portrait",
+                    },
+                }
+            ],
+        }
+        errors: list[str] = []
+        checker._check_viewport_candidate(viewport, "fixture.viewport", errors)
+        self.assertTrue(any("shell_viewport width does not match" in error for error in errors))
 
     def test_card_feed_runtime_script_passes_node_syntax_check(self) -> None:
         result = subprocess.run(

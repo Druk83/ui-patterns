@@ -2,7 +2,7 @@ schema_version: 1
 kind: screen-pool
 pool_id: fixture-screen-pool
 version: 0.1.0
-template_set_version: 0.3.0
+template_set_version: 0.3.1
 status: confirmed
 source_refs:
   - fixture:screen-pool
@@ -48,6 +48,10 @@ screens:
         source: fixture:viewport-requirement
         rationale: Тестовая проверка передачи размера из требования проекта.
         status: confirmed
+        screen_shell_candidates:
+          - status: gap
+            reason: Этот fixture не связывается с реальным каталогом оболочек.
+            decision_needed: Для fixture не требуется выбирать оболочку проекта.
     reference_artifacts: []
     rationale: Тестовый экран не представляет конкретный продукт.
     source_refs:

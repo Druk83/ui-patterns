@@ -2,7 +2,7 @@ schema_version: 1
 kind: screen-pool
 pool_id: invalid-screen-pool
 version: 0.1.0
-template_set_version: 0.3.0
+template_set_version: 0.3.1
 status: confirmed
 source_refs: [fixture:invalid-pool]
 confirmed_by: fixture-decision

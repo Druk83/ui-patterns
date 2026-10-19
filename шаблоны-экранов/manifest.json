@@ -1,10 +1,14 @@
 {
   "schema_version": 1,
-  "template_set_version": "0.3.0",
+  "template_set_version": "0.3.1",
   "status": "active",
+  "template_role": "content-composition",
+  "includes_viewport_shells": false,
+  "viewport_contract_scope": "responsive-content-behavior-only",
   "runtime": "framework-neutral-html-css-js",
   "source_url": "https://github.com/Druk83/ui-patterns.git",
   "screen_pool_schema": "контракт-пула-экранов.yml",
+  "screen_shell_integration_contract": "../screen-shell-integration-contract.md",
   "shared_runtime": "эталонный-шаблон",
   "templates": [
     {"template_id": "form-workflow-screen", "application_template_id": "form-workflow-ui", "template_path": "формы", "screen_type": "form workflow", "pattern_id": "ui-patterns.forms.form-data-entry-validation", "status": "active", "version": "0.2.0", "inputs": ["screen_id", "screen_type", "confirmed_viewport_matrix", "fixture_data"], "outputs": ["reference_only_preview", "component_slots", "state_model", "visual_artifact"], "states": ["initial", "action-complete", "recovery-required"], "actions": ["primary-action", "escape-recovery"], "transitions": ["initial-to-action-complete", "initial-to-recovery-required"], "viewport_contract": {"unit": "css-px", "source_required": true, "rationale_required": true, "breakpoint_conditions_required": true}, "accessibility_hooks": ["focus-visible", "keyboard-recovery", "status-announcement", "error-announcement"], "responsive_behavior": "Uses conditions from the confirmed consumer screen pool.", "acceptance_checks": ["preview-loads", "states-transition", "fixture-only-data"]},

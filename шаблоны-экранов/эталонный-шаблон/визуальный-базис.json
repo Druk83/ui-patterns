@@ -1,6 +1,8 @@
 {
-  "version": "0.3.0",
+  "version": "0.3.1",
   "status": "reference-only",
+  "artifact_scope": "content-composition-only",
+  "includes_viewport_shell": false,
   "purpose": "Машиночитаемый план runtime и visual проверки live reference prototype.",
   "viewport_source": "consumer-screen-pool",
   "required_states": ["initial", "action-complete", "recovery-required"],
