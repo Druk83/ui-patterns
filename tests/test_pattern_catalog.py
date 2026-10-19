@@ -85,6 +85,7 @@ class PatternCatalogValidatorTests(unittest.TestCase):
                 temporary_root,
                 active_pattern_ids,
                 application_templates,
+                "0.3.0",
                 errors,
             )
             self.assertTrue(any("active pattern not found" in error for error in errors))
@@ -111,6 +112,7 @@ class PatternCatalogValidatorTests(unittest.TestCase):
                 temporary_root,
                 active_pattern_ids,
                 application_templates,
+                "0.3.0",
                 errors,
             )
             self.assertIn("screen UI reference manifest must use fixture-only data", errors)
@@ -123,6 +125,7 @@ class PatternCatalogValidatorTests(unittest.TestCase):
             ROOT,
             ROOT / "tests" / "fixtures" / "valid-screen-pool.yml",
             active_pattern_ids,
+            "0.3.0",
             errors,
             require_confirmed=True,
         )
@@ -136,6 +139,7 @@ class PatternCatalogValidatorTests(unittest.TestCase):
             ROOT,
             ROOT / "tests" / "fixtures" / "invalid-screen-pool.yml",
             active_pattern_ids,
+            "0.3.0",
             errors,
             require_confirmed=True,
         )
@@ -146,7 +150,53 @@ class PatternCatalogValidatorTests(unittest.TestCase):
         checker = load_reference_checker()
         templates = checker.load_templates()
         entrypoints = checker.static_checks(templates)
-        self.assertEqual(len(entrypoints), 12)
+        self.assertEqual(len(entrypoints), 13)
+
+    def test_card_feed_has_distinct_pattern_application_and_screen_template(self) -> None:
+        checker = load_checker()
+        active_pattern_ids, application_templates = load_contracts(checker)
+        catalog = checker.load_yaml(ROOT / "pattern-catalog.yml")
+        manifest = json.loads((ROOT / "шаблоны-экранов" / "manifest.json").read_text(encoding="utf-8"))
+        template = next(item for item in manifest["templates"] if item["template_id"] == "card-feed-list-screen")
+        table_template = next(item for item in manifest["templates"] if item["template_id"] == "list-detail-table-screen")
+        entries = {item["id"]: item for item in catalog["entries"] if isinstance(item, dict) and item.get("id")}
+        selection = (ROOT / "ui-pattern-selection.md").read_text(encoding="utf-8")
+
+        self.assertIn("ui-patterns.lists.card-feed", active_pattern_ids)
+        self.assertNotEqual(template["pattern_id"], table_template["pattern_id"])
+        self.assertNotEqual(template["application_template_id"], table_template["application_template_id"])
+        self.assertIn("однородные строки и колонки", entries["ui-patterns.lists.data-table"]["selection_signals"])
+        self.assertIn(
+            "пользователю важно сопоставлять значения одних и тех же полей в строках и колонках",
+            entries["ui-patterns.lists.card-feed"]["contraindications"],
+        )
+        self.assertIn("ui-patterns.lists.card-feed", selection)
+        self.assertIn("ui-patterns.lists.data-table", selection)
+        self.assertEqual(template["application_template_id"], "list-detail-ui-card-feed")
+        self.assertEqual(template["pattern_id"], "ui-patterns.lists.card-feed")
+        self.assertEqual(template["template_path"], "карточная-лента")
+        self.assertEqual(application_templates["list-detail-ui-card-feed"]["selection_status"], "selectable")
+
+    def test_card_feed_runtime_script_passes_node_syntax_check(self) -> None:
+        result = subprocess.run(
+            ["node", "--check", str(ROOT / "шаблоны-экранов" / "карточная-лента" / "card-feed.js")],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
+    def test_card_feed_runtime_interactions(self) -> None:
+        result = subprocess.run(
+            ["node", str(ROOT / "tests" / "card-feed-runtime.test.cjs")],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn("CARD_FEED_RUNTIME_TEST: PASS", result.stdout)
 
 
 if __name__ == "__main__":

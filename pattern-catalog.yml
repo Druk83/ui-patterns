@@ -1,6 +1,6 @@
 schema_version: 1
 catalog_id: ui-patterns
-catalog_version: 0.2.0
+catalog_version: 0.3.0
 domain: ui
 visibility: public
 
@@ -309,6 +309,34 @@ entries:
     compatible_with: [ui-patterns.navigation.menu-navigation, ui-patterns.dialogs.modal-dialog]
     limitations:
       - narrow-viewport and accessibility behavior require project decisions
+
+  - id: ui-patterns.lists.card-feed
+    title: Карточная лента коллекции
+    family: lists
+    pattern_type: LIST_DETAIL_UI
+    decision_scope: screen-block
+    status: active
+    card_path: списки/карточная-лента.md
+    template_id: list-detail-ui-card-feed
+    diagram_source: списки/карточная-лента.plantuml
+    diagram_artifact: списки/карточная-лента.png
+    intent: Представить коллекцию самостоятельными карточками в адаптивной сетке для быстрого просмотра содержимого.
+    required_conditions:
+      - пользователю нужно просматривать коллекцию самостоятельных элементов
+      - содержимое элемента воспринимается как единая карточка, а не как строка общих колонок
+    selection_signals:
+      - карточки содержат несколько связанных атрибутов одного элемента
+      - содержимое карточек может различаться по объёму или визуальной структуре
+      - элементы удобнее сканировать по отдельности, а не сравнивать по общей колонке
+    contraindications:
+      - пользователю важно сопоставлять значения одних и тех же полей в строках и колонках
+      - требуется высокая плотность структурированных строковых данных
+      - порядок, поля и операции над коллекцией не подтверждены требованиями
+    compatible_with: [ui-patterns.navigation.menu-navigation, ui-patterns.dialogs.modal-dialog]
+    limitations:
+      - состав карточки и действия над элементом определяются требованиями проекта
+      - число колонок и responsive-условия определяются подтверждённой матрицей viewport
+      - доступность, фильтрация и поведение пустых состояний требуют проектных решений
 
   - id: ui-patterns.navigation.menu-navigation
     title: Иерархическая навигация меню

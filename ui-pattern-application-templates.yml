@@ -194,6 +194,65 @@ templates:
       - row-action-confirmation-and-recovery
       - narrow-viewport-overflow
 
+  - template_id: list-detail-ui-card-feed
+    status: active
+    selection_status: selectable
+    pattern_id: ui-patterns.lists.card-feed
+    output_scope: screen-block
+    principle_profiles: [common-ui, input-and-recovery]
+    required_inputs:
+      - screen_id
+      - route
+      - roles
+      - viewport
+      - orientation
+      - data_source
+      - item_identity
+      - card_content_slots
+      - collection_actions
+      - content_density
+      - reference_artifact
+    block_structure:
+      - block_role: collection-container
+        required_fields: [purpose, data_source, item_identity, ordering]
+      - block_role: collection-controls
+        required_fields: [search_applicability, filter_applicability, reset_behavior, empty_result]
+      - block_role: card-grid
+        required_fields: [layout_rule, card_order, reflow_conditions, spacing_rule]
+      - block_role: collection-card
+        required_fields: [item_identity, title, content_slots, optional_media, open_behavior]
+      - block_role: card-actions
+        required_fields: [action_id, applicability, availability, confirmation, success_transition, error_transition]
+      - block_role: collection-status
+        required_fields: [loading_state, empty_state, filtered_empty_state, error_state, recovery_action]
+    required_state_decisions:
+      - loading
+      - populated
+      - empty
+      - filtered-empty
+      - error
+      - disabled-action
+    required_actions:
+      - open-item
+      - search-if-defined
+      - filter-if-defined
+      - reset-filter-if-defined
+      - card-action-if-defined
+    required_transitions:
+      - loading-to-populated-or-error
+      - collection-to-filtered-or-filtered-empty
+      - filtered-to-reset
+      - card-to-detail-or-action
+      - error-to-retry
+    required_checks:
+      - card-identity-and-content-hierarchy
+      - card-grid-reflow-at-confirmed-viewports
+      - collection-order-and-item-open-behavior
+      - loading-empty-filtered-empty-and-error-states
+      - action-availability-and-recovery
+      - keyboard-focus-and-status-announcement
+      - narrow-viewport-card-overflow
+
   - template_id: navigation-content-ui-menu
     status: active
     selection_status: selectable

@@ -1,5 +1,5 @@
 {
-  "version": "0.2.0",
+  "version": "0.3.0",
   "status": "reference-only",
   "purpose": "Машиночитаемый план runtime и visual проверки live reference prototype.",
   "viewport_source": "consumer-screen-pool",

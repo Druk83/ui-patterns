@@ -13,13 +13,12 @@
 .tools/plantuml-render/.env
 .issues/done
 */__pycache__/
+__pycache__/
 .issues/
 .approach/
 .source/
 .project-structure.json
 .agents/
-pattern-catalog-check.py
-CHANGELOG.md
 .tasks/
 AGENTS.md
 .catalog/

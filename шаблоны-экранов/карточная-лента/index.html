@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Эталон карточной ленты</title>
+  <link rel="stylesheet" href="../эталонный-шаблон/styles.css">
+</head>
+<body>
+  <main class="screen card-feed-screen" data-template-id="card-feed-list-screen" tabindex="-1">
+    <header class="screen-header">
+      <p class="eyebrow">КОЛЛЕКЦИЯ КАРТОЧЕК</p>
+      <h1>Карточная лента</h1>
+      <p class="muted">Нейтральный пример самостоятельных элементов коллекции.</p>
+      <button id="primary-action" type="button">Проверить действие</button>
+    </header>
+
+    <section class="panel feed-panel" aria-labelledby="collection-title">
+      <div class="feed-heading">
+        <div>
+          <h2 id="collection-title">Элементы коллекции</h2>
+          <p class="muted">Состав карточек и операции являются примерами для адаптации.</p>
+        </div>
+        <form class="feed-controls" id="filter-form" role="search" aria-label="Поиск по карточкам">
+          <label for="card-query">Найти элемент</label>
+          <input id="card-query" name="query" type="search" aria-controls="card-list">
+          <button type="submit">Найти</button>
+          <button id="reset-filter" type="reset">Сбросить</button>
+        </form>
+      </div>
+
+      <p id="status" class="status" role="status">Загрузка завершена. Показаны все элементы.</p>
+      <p id="error" class="error" role="alert" hidden>Не удалось обновить состояние. Повторите действие.</p>
+
+      <div class="card-feed" id="card-list" role="list" aria-label="Элементы коллекции">
+        <article class="feed-card" role="listitem" data-searchable="элемент 01 краткое описание пример содержания">
+          <p class="card-meta">Элемент 01</p>
+          <h3>Заголовок элемента</h3>
+          <p>Краткое описание помогает понять содержание до открытия подробностей.</p>
+          <button class="card-open" type="button">Открыть элемент 01</button>
+        </article>
+        <article class="feed-card" role="listitem" data-searchable="элемент 02 краткая заметка пример содержания">
+          <p class="card-meta">Элемент 02</p>
+          <h3>Другой заголовок</h3>
+          <p>Состав текста карточки может отличаться, если это подтверждено требованиями.</p>
+          <button class="card-open" type="button">Открыть элемент 02</button>
+        </article>
+        <article class="feed-card" role="listitem" data-searchable="элемент 03 краткое описание нейтральный пример">
+          <p class="card-meta">Элемент 03</p>
+          <h3>Ещё один элемент</h3>
+          <p>Карточная сетка не задаёт конкретную предметную область или модель данных.</p>
+          <button class="card-open" type="button">Открыть элемент 03</button>
+        </article>
+      </div>
+      <p class="empty-state" id="empty-state" hidden>Совпадений по запросу нет.</p>
+    </section>
+  </main>
+  <script src="../эталонный-шаблон/script.js"></script>
+  <script src="card-feed.js"></script>
+</body>
+</html>

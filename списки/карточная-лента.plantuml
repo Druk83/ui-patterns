@@ -1,0 +1,27 @@
+@startuml
+skinparam shadowing false
+skinparam state {
+  BackgroundColor #E8F1FB
+  BorderColor #4A6FA5
+  FontColor #1C2430
+}
+skinparam ArrowColor #4A6FA5
+
+[*] --> Loading : открыть коллекцию
+state "Загрузка" as Loading #FFF4CC
+state "Карточки отображены" as Populated #E8F1FB
+state "Результат отфильтрован" as Filtered #E8F1FB
+state "Совпадений нет" as Empty #FDE2E2
+state "Ошибка" as Error #FDE2E2
+state "Подробности или действие" as Item #E2F0D9
+
+Loading --> Populated : данные загружены
+Loading --> Error : ошибка загрузки
+Populated --> Filtered : применён поиск или фильтр
+Filtered --> Populated : фильтр сброшен
+Filtered --> Empty : совпадений нет
+Empty --> Populated : фильтр сброшен
+Populated --> Item : открыть карточку
+Item --> Populated : вернуться к коллекции
+Error --> Loading : повторить загрузку
+@enduml
