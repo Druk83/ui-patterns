@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Эталон композиции лендинга</title>
+  <link rel="stylesheet" href="../эталонный-шаблон/styles.css">
+  <link rel="stylesheet" href="landing.css">
+</head>
+<body>
+  <main class="screen landing" data-template-id="landing-page-screen" data-reference-only="true" tabindex="0">
+    <section class="screen-header entry" aria-labelledby="entry-title" data-block-id="entry">
+      <div class="entry-copy">
+        <p class="eyebrow">Источник: спецификация проекта</p>
+        <h1 id="entry-title">Подтверждённое предложение</h1>
+        <p class="lead">Здесь размещаются адресат, результат и условия из реестра содержимого проекта.</p>
+        <a class="action-link" href="#primary-action-section">Перейти к проверке основного действия</a>
+      </div>
+      <div class="content-map" aria-label="Схема порядка содержимого">
+        <span>Предложение</span>
+        <span>Объяснение</span>
+        <span>Действие</span>
+      </div>
+    </section>
+
+    <section class="panel section supporting" aria-labelledby="support-title" data-block-id="supporting-content">
+      <p class="eyebrow">Содержимое по подтверждённым входам</p>
+      <h2 id="support-title">Объяснение предложения</h2>
+      <p>Каждый блок получает назначение, порядок, источник текста и применимые ссылки на паттерны. При отсутствии содержимого блок не добавляется.</p>
+      <div class="source-card" aria-label="Состав записи блока">
+        <span>Назначение</span><span>Источник</span><span>Состояние</span><span>Проверка</span>
+      </div>
+    </section>
+
+    <section class="panel section action-section" id="primary-action-section" aria-labelledby="action-title" data-block-id="primary-action">
+      <p class="eyebrow">Одно действие · возможен повтор того же назначения</p>
+      <h2 id="action-title">Проверка основного действия</h2>
+      <p>Этот эталон показывает состояния действия. Его подпись и результат не являются текстом продуктового лендинга.</p>
+      <label class="variant-label" for="variant">Вариант содержимого</label>
+      <select id="variant">
+        <option value="without-form">Без формы</option>
+        <option value="with-form">С формой при подтверждённой потребности</option>
+      </select>
+      <div id="form-variant" class="form-variant" hidden data-block-id="form" data-pattern-refs="ui-patterns.forms.form-data-entry-validation">
+        <label for="fixture-field">Тестовое поле</label>
+        <input id="fixture-field" type="text" autocomplete="off" aria-describedby="field-help">
+        <p id="field-help">В проекте здесь указывают только поле, необходимое для подтверждённого действия.</p>
+      </div>
+      <button id="primary-action" type="button">Проверить результат действия</button>
+      <p id="status" class="status" role="status">Начальное состояние</p>
+      <p id="error" class="error" role="alert" hidden>Требуется действие восстановления</p>
+    </section>
+  </main>
+  <script src="landing.js"></script>
+</body>
+</html>

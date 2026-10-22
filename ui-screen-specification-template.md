@@ -88,6 +88,16 @@ Information architecture profile: `{{screen.information_architecture_profiles}}`
 - Controls: {{block.controls}}
 - Required pattern roles: {{block.pattern_roles}}
 
+Для `landing-page-composition-ui` дополнительно зафиксировать для каждого
+включённого блока порядок, условие включения, ссылки на подтверждённое
+содержимое и доказательства, `pattern_refs`, состояния и поведение при
+перестроении viewport. Необязательный блок без подтверждённого входа не
+появляется в спецификации; его отсутствие объясняется решением выбора.
+
+| Порядок | Блок | Условие включения | Источники содержимого | Доказательства | `pattern_refs` | Состояния | Перестроение |
+|---|---|---|---|---|---|---|---|
+| {{block.order}} | {{block.ui_id}} | {{block.inclusion_condition}} | {{block.content_refs}} | {{block.evidence_refs}} | {{block.pattern_refs}} | {{block.states}} | {{block.viewport_behavior}} |
+
 #### Actions
 
 | Action | Trigger | Availability | Input | Success | Error | Next transition |

@@ -80,7 +80,7 @@ class PatternCatalogValidatorTests(unittest.TestCase):
             )
             manifest_path = temporary_root / "шаблоны-экранов" / "manifest.json"
             manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-            manifest["templates"][0]["pattern_id"] = "missing-pattern"
+            next(item for item in manifest["templates"] if item["template_id"] == "form-workflow-screen")["pattern_id"] = "missing-pattern"
             manifest_path.write_text(
                 json.dumps(manifest, ensure_ascii=False, indent=2) + "\n",
                 encoding="utf-8",
@@ -90,7 +90,7 @@ class PatternCatalogValidatorTests(unittest.TestCase):
                 temporary_root,
                 active_pattern_ids,
                 application_templates,
-                "0.3.1",
+                "0.3.2",
                 errors,
             )
             self.assertTrue(any("active pattern not found" in error for error in errors))
@@ -117,10 +117,36 @@ class PatternCatalogValidatorTests(unittest.TestCase):
                 temporary_root,
                 active_pattern_ids,
                 application_templates,
-                "0.3.1",
+                "0.3.2",
                 errors,
             )
             self.assertIn("screen UI reference manifest must use fixture-only data", errors)
+
+    def test_composite_landing_template_resolves_active_block_patterns(self) -> None:
+        checker = load_checker()
+        active_pattern_ids, application_templates = load_contracts(checker)
+        manifest = json.loads((ROOT / "шаблоны-экранов" / "manifest.json").read_text(encoding="utf-8"))
+        landing = next(item for item in manifest["templates"] if item["template_id"] == "landing-page-screen")
+        self.assertIsNone(landing["pattern_id"])
+        self.assertEqual(landing["application_template_id"], "landing-page-composition-ui")
+        self.assertTrue(any(block["pattern_refs"] for block in landing["blocks"]))
+        self.assertTrue(all(ref in active_pattern_ids for block in landing["blocks"] for ref in block["pattern_refs"]))
+        self.assertEqual(application_templates["landing-page-composition-ui"]["selection_status"], "selectable")
+
+    def test_rejects_unknown_composite_block_pattern(self) -> None:
+        checker = load_checker()
+        active_pattern_ids, application_templates = load_contracts(checker)
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            temporary_root = Path(temporary_directory)
+            shutil.copytree(ROOT / "шаблоны-экранов", temporary_root / "шаблоны-экранов")
+            manifest_path = temporary_root / "шаблоны-экранов" / "manifest.json"
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+            landing = next(item for item in manifest["templates"] if item["template_id"] == "landing-page-screen")
+            landing["blocks"][2]["pattern_refs"] = ["missing-pattern"]
+            manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+            errors: list[str] = []
+            checker.check_screen_templates(temporary_root, active_pattern_ids, application_templates, "0.3.2", errors)
+            self.assertTrue(any("active pattern not found: missing-pattern" in error for error in errors))
 
     def test_accepts_confirmed_screen_pool(self) -> None:
         checker = load_checker()
@@ -130,7 +156,7 @@ class PatternCatalogValidatorTests(unittest.TestCase):
             ROOT,
             ROOT / "tests" / "fixtures" / "valid-screen-pool.yml",
             active_pattern_ids,
-            "0.3.1",
+            "0.3.2",
             errors,
             require_confirmed=True,
         )
@@ -144,7 +170,7 @@ class PatternCatalogValidatorTests(unittest.TestCase):
             ROOT,
             ROOT / "tests" / "fixtures" / "invalid-screen-pool.yml",
             active_pattern_ids,
-            "0.3.1",
+            "0.3.2",
             errors,
             require_confirmed=True,
         )
@@ -156,7 +182,7 @@ class PatternCatalogValidatorTests(unittest.TestCase):
         checker = load_reference_checker()
         templates = checker.load_templates()
         entrypoints = checker.static_checks(templates)
-        self.assertEqual(len(entrypoints), 13)
+        self.assertEqual(len(entrypoints), 14)
 
     def test_card_feed_has_distinct_pattern_application_and_screen_template(self) -> None:
         checker = load_checker()
@@ -191,7 +217,7 @@ class PatternCatalogValidatorTests(unittest.TestCase):
             ROOT,
             active_pattern_ids,
             application_templates,
-            "0.3.1",
+            "0.3.2",
             errors,
         )
         self.assertEqual(errors, [])
