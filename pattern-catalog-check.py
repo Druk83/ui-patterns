@@ -53,6 +53,40 @@ def add_error(errors: list[str], message: str) -> None:
     errors.append(message)
 
 
+def check_landing_registration(
+    root: Path,
+    catalog: dict[str, Any],
+    application_templates: dict[str, dict[str, Any]],
+    errors: list[str],
+) -> None:
+    registration = catalog.get("landing_page_composition")
+    if not isinstance(registration, dict):
+        add_error(errors, "landing_page_composition registration is missing")
+        return
+    template_id = registration.get("template_id")
+    screen_template_id = registration.get("screen_template_id")
+    if template_id != "landing-page-composition-ui":
+        add_error(errors, "landing_page_composition has an unexpected template_id")
+        return
+    if template_id not in catalog.get("cross_cutting_templates", []):
+        add_error(errors, "landing-page-composition-ui is not registered as cross-cutting")
+    application = application_templates.get(template_id)
+    if not application or application.get("scope") != "cross-cutting":
+        add_error(errors, "landing-page-composition-ui application template is missing or has invalid scope")
+    elif application.get("status") != "active" or application.get("selection_status") != "selectable":
+        add_error(errors, "landing-page-composition-ui must be active and selectable")
+    manifest_path = root / "шаблоны-экранов" / "manifest.json"
+    try:
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        add_error(errors, f"landing screen manifest cannot be read: {exc}")
+        return
+    templates = manifest.get("templates", []) if isinstance(manifest, dict) else []
+    matches = [item for item in templates if isinstance(item, dict) and item.get("template_id") == screen_template_id]
+    if len(matches) != 1 or matches[0].get("application_template_id") != template_id:
+        add_error(errors, "landing_page_composition screen template link is invalid")
+
+
 def check_screen_templates(
     root: Path,
     active_pattern_ids: set[str],
@@ -126,7 +160,7 @@ def check_screen_templates(
         if not isinstance(template, dict):
             add_error(errors, f"{location} must be an object")
             continue
-        for field in ("template_id", "application_template_id", "template_path", "screen_type", "pattern_id", "status"):
+        for field in ("template_id", "application_template_id", "template_path", "screen_type", "status"):
             if not isinstance(template.get(field), str) or not template[field]:
                 add_error(errors, f"{location}: missing {field}")
         for field in ("version", "responsive_behavior"):
@@ -147,6 +181,59 @@ def check_screen_templates(
             add_error(errors, f"{location}: template is not active")
         template_id = template.get("template_id")
         pattern_id = template.get("pattern_id")
+        if not isinstance(pattern_id, str) and pattern_id is not None:
+            add_error(errors, f"{location}: pattern_id must be a string or null")
+        if isinstance(pattern_id, str) and not pattern_id:
+            add_error(errors, f"{location}: pattern_id must not be empty")
+        blocks = template.get("blocks")
+        if pattern_id is None:
+            if not isinstance(blocks, list) or not blocks:
+                add_error(errors, f"{location}: composite template requires blocks")
+            else:
+                block_ids: set[str] = set()
+                block_orders: set[int] = set()
+                referenced_patterns: set[str] = set()
+                for block_index, block in enumerate(blocks):
+                    block_location = f"{location}.blocks[{block_index}]"
+                    if not isinstance(block, dict):
+                        add_error(errors, f"{block_location}: block must be an object")
+                        continue
+                    for field in ("block_id", "purpose", "content_source"):
+                        if not isinstance(block.get(field), str) or not block[field].strip():
+                            add_error(errors, f"{block_location}: missing {field}")
+                    block_id = block.get("block_id")
+                    if isinstance(block_id, str):
+                        if block_id in block_ids:
+                            add_error(errors, f"{block_location}: duplicate block_id: {block_id}")
+                        block_ids.add(block_id)
+                    order = block.get("order")
+                    if not isinstance(order, int) or isinstance(order, bool) or order < 1:
+                        add_error(errors, f"{block_location}: order must be a positive integer")
+                    elif order in block_orders:
+                        add_error(errors, f"{block_location}: duplicate order: {order}")
+                    else:
+                        block_orders.add(order)
+                    if not isinstance(block.get("required"), bool):
+                        add_error(errors, f"{block_location}: required must be boolean")
+                    states = block.get("states")
+                    if not isinstance(states, list) or not states or not all(isinstance(item, str) and item for item in states):
+                        add_error(errors, f"{block_location}: states must be a non-empty string list")
+                    elif not isinstance(template.get("states"), list) or not set(states).issubset(set(template["states"])):
+                        add_error(errors, f"{block_location}: states are not declared by template")
+                    refs = block.get("pattern_refs")
+                    if not isinstance(refs, list) or not all(isinstance(ref, str) and ref for ref in refs):
+                        add_error(errors, f"{block_location}: pattern_refs must be a string list")
+                        continue
+                    if len(refs) != len(set(refs)):
+                        add_error(errors, f"{block_location}: duplicate pattern_refs")
+                    for ref in refs:
+                        if ref not in active_pattern_ids:
+                            add_error(errors, f"{block_location}: active pattern not found: {ref}")
+                        referenced_patterns.add(ref)
+                if not referenced_patterns:
+                    add_error(errors, f"{location}: composite template has no block pattern_refs")
+        elif blocks is not None:
+            add_error(errors, f"{location}: single-pattern template must not declare composite blocks")
         template_path = template.get("template_path")
         if isinstance(template_path, str) and template_path:
             template_dir = root / "шаблоны-экранов" / template_path
@@ -688,6 +775,7 @@ def main() -> int:
         for _, record in records
         if record.get("status") == "active" and (record.get("pattern_id") or record.get("id"))
     }
+    check_landing_registration(root, catalog, templates, errors)
     check_screen_templates(root, active_pattern_ids, templates, catalog_version, errors)
     check_project_structure(root, errors)
     if args.screen_pool:

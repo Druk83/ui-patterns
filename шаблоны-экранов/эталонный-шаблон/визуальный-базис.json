@@ -1,5 +1,5 @@
 {
-  "version": "0.3.1",
+  "version": "0.3.2",
   "status": "reference-only",
   "artifact_scope": "content-composition-only",
   "includes_viewport_shell": false,

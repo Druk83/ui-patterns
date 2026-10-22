@@ -601,6 +601,68 @@ templates:
       - structure_can_grow_without_uncontrolled_navigation_complexity
       - information_architecture_is_validated_by_declared_method
 
+  - template_id: landing-page-composition-ui
+    status: active
+    selection_status: selectable
+    scope: cross-cutting
+    pattern_id: null
+    output_scope: multi-section-screen-content
+    principle_profiles: [common-ui]
+    applies_when:
+      - organization_model_is_single_page
+      - one_primary_page_goal_is_confirmed
+      - one_primary_action_is_confirmed
+      - page_combines_multiple_meaningful_blocks
+    do_not_apply_when:
+      - page_goal_or_primary_action_is_unknown
+      - screen_is_a_single_task_block_without_page_composition
+      - multiple_independent_primary_goals_are_required
+    unknown_behavior: record-as-gap
+    required_inputs:
+      - page_goal
+      - confirmed_offer
+      - target_audience
+      - route_or_entry_point
+      - entry_promise_or_not_applicable
+      - primary_action_id_and_result
+      - approved_content_and_evidence_register
+      - confirmed_viewport_matrix_or_draft_status
+      - design_system_or_gap
+      - section_pattern_candidates
+    output_contract:
+      - ordered_sections_with_purpose_and_content_source
+      - first_screen_message_and_action_priority
+      - primary_action_repetition_policy
+      - secondary_action_rationale
+      - conditional_media_form_proof_and_faq
+      - section_states_and_pattern_refs
+      - responsive_reflow_and_focus_order
+      - claim_to_source_traceability
+    block_record_fields: [block_id, purpose, order, content_refs, evidence_refs, state_refs, pattern_refs, viewport_behavior]
+    required_blocks:
+      - entry: [offer, audience, next_step, primary_action_id, content_refs]
+      - supporting_content: [purpose, order, content_refs, pattern_refs]
+      - primary_action: [action_id, result, label, state_refs, repeated_at]
+    conditional_blocks:
+      - proof: [verified_evidence_refs, claim_refs, include_only_if_available]
+      - objections: [confirmed_objection_refs, answer_refs, include_only_if_available]
+      - form: [required_field_refs, validation, success, error, recovery, include_only_if_action_requires]
+      - media: [source, purpose, text_alternative, performance_budget, include_only_if_supported]
+      - navigation: [route_refs, purpose, include_only_if_required]
+    related_templates:
+      conditional: [information-architecture-ui, responsive-ui]
+      scenario_only: [stateful-action-ui, progressive-onboarding-ui]
+    required_checks:
+      - selection_conditions_and_rejections_recorded
+      - one_primary_action_id_across_repeated_ctas
+      - first_screen_offer_audience_and_next_step_are_confirmed
+      - every_claim_and_heading_has_content_source
+      - media_does_not_obscure_message_or_action
+      - optional_blocks_have_confirmed_inputs
+      - sections_keep_logical_order_and_consistent_hierarchy
+      - contrast_focus_order_and_reflow_are_checked
+      - no_unverified_metric_testimonial_or_product_image
+
   - template_id: cli-command-ui
     status: active
     selection_status: selectable

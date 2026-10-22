@@ -1,6 +1,6 @@
 schema_version: 1
 catalog_id: ui-patterns
-catalog_version: 0.3.1
+catalog_version: 0.3.2
 domain: ui
 visibility: public
 
@@ -163,6 +163,19 @@ cross_cutting_templates:
   - progressive-onboarding-ui
   - responsive-ui
   - information-architecture-ui
+  - landing-page-composition-ui
+
+landing_page_composition:
+  template_id: landing-page-composition-ui
+  selection_status: selectable
+  required_conditions:
+    - confirmed_single_page_organization
+    - confirmed_primary_goal_and_action
+    - multiple_meaningful_sections
+  missing_context_behavior: record-as-gap
+  screen_template_id: landing-page-screen
+  screen_content_scope: composition-only
+  block_pattern_policy: select-active-patterns-per-block
 
 candidate_cross_cutting_templates:
   selection_status: not_selectable

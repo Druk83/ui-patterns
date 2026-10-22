@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "template_set_version": "0.3.1",
+  "template_set_version": "0.3.2",
   "status": "active",
   "template_role": "content-composition",
   "includes_viewport_shells": false,
@@ -11,6 +11,34 @@
   "screen_shell_integration_contract": "../screen-shell-integration-contract.md",
   "shared_runtime": "эталонный-шаблон",
   "templates": [
+    {
+      "template_id": "landing-page-screen",
+      "application_template_id": "landing-page-composition-ui",
+      "template_path": "лендинг",
+      "screen_type": "single-page landing content composition",
+      "pattern_id": null,
+      "status": "active",
+      "version": "0.3.2",
+      "inputs": ["screen_id", "confirmed_page_goal", "confirmed_offer", "target_audience", "primary_action", "content_and_evidence_register", "confirmed_viewport_matrix", "fixture_data"],
+      "outputs": ["reference_only_preview", "ordered_content_blocks", "block_pattern_refs", "state_model", "visual_artifact"],
+      "states": ["initial", "action-complete", "recovery-required"],
+      "actions": ["primary-action", "escape-recovery", "switch-form-variant"],
+      "transitions": ["initial-to-action-complete", "initial-to-recovery-required"],
+      "viewport_contract": {"unit": "css-px", "source_required": true, "rationale_required": true, "breakpoint_conditions_required": true},
+      "accessibility_hooks": ["focus-visible", "logical-focus-order", "status-announcement", "error-announcement", "reflow"],
+      "responsive_behavior": "Content reflows under confirmed consumer viewport conditions; section order and primary action remain available.",
+      "acceptance_checks": ["preview-loads", "states-transition", "fixture-only-data", "optional-blocks-have-inputs", "claim-source-traceability"],
+      "blocks": [
+        {"block_id": "entry", "order": 1, "required": true, "purpose": "confirmed offer, audience and next step", "content_source": "consumer content register", "states": ["initial"], "pattern_refs": []},
+        {"block_id": "supporting-content", "order": 2, "required": true, "purpose": "explain confirmed value and task context", "content_source": "consumer content register", "states": ["initial"], "pattern_refs": []},
+        {"block_id": "card-feed", "order": 3, "required": false, "purpose": "show independently scannable items when confirmed", "content_source": "consumer item inventory", "states": ["initial"], "pattern_refs": ["ui-patterns.lists.card-feed"]},
+        {"block_id": "proof", "order": 4, "required": false, "purpose": "present only verified evidence", "content_source": "consumer evidence register", "states": ["initial"], "pattern_refs": []},
+        {"block_id": "objections", "order": 5, "required": false, "purpose": "answer confirmed user questions", "content_source": "consumer objection register", "states": ["initial"], "pattern_refs": []},
+        {"block_id": "form", "order": 6, "required": false, "purpose": "collect data required by primary action", "content_source": "consumer action and field requirements", "states": ["initial", "action-complete", "recovery-required"], "pattern_refs": ["ui-patterns.forms.form-data-entry-validation"]},
+        {"block_id": "navigation", "order": 7, "required": false, "purpose": "provide confirmed section or route access", "content_source": "consumer navigation requirements", "states": ["initial"], "pattern_refs": ["ui-patterns.navigation.menu-navigation"]},
+        {"block_id": "primary-action", "order": 8, "required": true, "purpose": "repeat the same primary action where justified", "content_source": "consumer primary action contract", "states": ["initial", "action-complete", "recovery-required"], "pattern_refs": []}
+      ]
+    },
     {"template_id": "form-workflow-screen", "application_template_id": "form-workflow-ui", "template_path": "формы", "screen_type": "form workflow", "pattern_id": "ui-patterns.forms.form-data-entry-validation", "status": "active", "version": "0.2.0", "inputs": ["screen_id", "screen_type", "confirmed_viewport_matrix", "fixture_data"], "outputs": ["reference_only_preview", "component_slots", "state_model", "visual_artifact"], "states": ["initial", "action-complete", "recovery-required"], "actions": ["primary-action", "escape-recovery"], "transitions": ["initial-to-action-complete", "initial-to-recovery-required"], "viewport_contract": {"unit": "css-px", "source_required": true, "rationale_required": true, "breakpoint_conditions_required": true}, "accessibility_hooks": ["focus-visible", "keyboard-recovery", "status-announcement", "error-announcement"], "responsive_behavior": "Uses conditions from the confirmed consumer screen pool.", "acceptance_checks": ["preview-loads", "states-transition", "fixture-only-data"]},
     {"template_id": "list-detail-table-screen", "application_template_id": "list-detail-ui-data-table", "template_path": "списки", "screen_type": "list/detail/data table", "pattern_id": "ui-patterns.lists.data-table", "status": "active", "version": "0.2.0", "inputs": ["screen_id", "screen_type", "confirmed_viewport_matrix", "fixture_data"], "outputs": ["reference_only_preview", "component_slots", "state_model", "visual_artifact"], "states": ["initial", "action-complete", "recovery-required"], "actions": ["primary-action", "escape-recovery"], "transitions": ["initial-to-action-complete", "initial-to-recovery-required"], "viewport_contract": {"unit": "css-px", "source_required": true, "rationale_required": true, "breakpoint_conditions_required": true}, "accessibility_hooks": ["focus-visible", "keyboard-recovery", "status-announcement", "error-announcement"], "responsive_behavior": "Uses conditions from the confirmed consumer screen pool.", "acceptance_checks": ["preview-loads", "states-transition", "fixture-only-data"]},
     {"template_id": "card-feed-list-screen", "application_template_id": "list-detail-ui-card-feed", "template_path": "карточная-лента", "screen_type": "list/card feed", "pattern_id": "ui-patterns.lists.card-feed", "status": "active", "version": "0.3.0", "inputs": ["screen_id", "screen_type", "confirmed_viewport_matrix", "fixture_data"], "outputs": ["reference_only_preview", "card_content_slots", "responsive_card_grid", "state_model", "visual_artifact"], "states": ["initial", "action-complete", "recovery-required"], "actions": ["primary-action", "escape-recovery", "search", "filter", "reset-filter"], "transitions": ["initial-to-action-complete", "initial-to-recovery-required", "collection-to-filtered", "filtered-to-reset"], "viewport_contract": {"unit": "css-px", "source_required": true, "rationale_required": true, "breakpoint_conditions_required": true}, "accessibility_hooks": ["focus-visible", "keyboard-recovery", "status-announcement", "error-announcement"], "responsive_behavior": "Uses confirmed viewport conditions from the consumer screen pool; does not prescribe device sizes.", "acceptance_checks": ["preview-loads", "filter-state-updates", "states-transition", "fixture-only-data", "card-grid-reflows"]},
